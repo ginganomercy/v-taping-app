@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { X, User, Save, Download, Upload, Check } from 'lucide-react';
-import { UserProfile } from '../types/profile';
-import { storage } from '../services/storage';
-import { sound } from '../services/sound';
+import { UserProfile } from '@/types/profile.types';
+import { localStorageService } from '@/infrastructure/storage/localStorage.service';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -25,12 +25,12 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
-    sound.playCelebration();
+    soundSynthService.playCelebration();
     onClose();
   };
 
   const handleExport = async () => {
-    const jsonStr = await storage.exportFullBackup();
+    const jsonStr = await localStorageService.exportCompleteBackup();
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -38,7 +38,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
     a.download = `v-taper-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    sound.playBeep(650, 'sine', 0.1);
+    soundSynthService.playBeep(650, 'sine', 0.1);
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,13 +48,13 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
     const reader = new FileReader();
     reader.onload = async (event) => {
       const text = event.target?.result as string;
-      const success = await storage.importBackup(text);
+      const success = await localStorageService.restoreBackup(text);
       if (success) {
         setImportStatus('Backup berhasil dipulihkan!');
-        const reloaded = storage.getProfileSync();
+        const reloaded = localStorageService.getProfileSync();
         setFormData(reloaded);
         onSave(reloaded);
-        sound.playCelebration();
+        soundSynthService.playCelebration();
       } else {
         setImportStatus('Gagal membaca file backup.');
       }

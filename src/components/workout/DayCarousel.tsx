@@ -1,14 +1,14 @@
 import React from 'react';
 import { Calendar, ArrowLeftRight } from 'lucide-react';
-import { DayIndex } from '../types/workout';
-import { WORKOUT_SCHEDULE, DAY_ORDER } from '../data/workoutData';
+import { DayIndex } from '@/types/workout.types';
+import { WORKOUT_SCHEDULE, DAY_ORDER } from '@/data/workoutData';
 
-interface DaySelectorProps {
+interface DayCarouselProps {
   currentDay: DayIndex;
   onSelectDay: (day: DayIndex) => void;
 }
 
-export const DaySelector: React.FC<DaySelectorProps> = ({ currentDay, onSelectDay }) => {
+export const DayCarousel: React.FC<DayCarouselProps> = ({ currentDay, onSelectDay }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-2 px-1">

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Zap, CheckCircle, AlertOctagon } from 'lucide-react';
-import { dbService } from '../services/db';
+import { indexedDbService } from '@/infrastructure/db/indexedDb.service';
 
 export const HipShieldView: React.FC = () => {
   const [painLevel, setPainLevel] = useState<number>(4);
 
   useEffect(() => {
-    dbService.getMetric<number>('pain_level', 4).then(setPainLevel);
+    indexedDbService.getMetric<number>('pain_level', 4).then(setPainLevel);
   }, []);
 
   const handleSliderChange = (val: number) => {
     setPainLevel(val);
-    dbService.setMetric('pain_level', val);
+    indexedDbService.setMetric('pain_level', val);
   };
 
   const getFeedback = (val: number) => {

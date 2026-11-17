@@ -1,4 +1,4 @@
-import { DayIndex, DaySession } from '../types/workout';
+import { DayIndex, DaySession } from '@/types/workout.types';
 
 export const WORKOUT_SCHEDULE: Record<DayIndex, DaySession> = {
   1: {

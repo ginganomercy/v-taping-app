@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
-import { sound } from '../services/sound';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 
 interface TimerModalProps {
   isOpen: boolean;
@@ -28,10 +28,10 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 
   const handleTick = useCallback((sec: number) => {
     if (type === 'negative') {
-      sound.playNegativeTick(sec);
+      soundSynthService.playNegativeTick(sec);
     } else {
-      if (sec <= 3 && sec > 0) sound.playBeep(520, 'sine', 0.1);
-      if (sec === 0) sound.playCelebration();
+      if (sec <= 3 && sec > 0) soundSynthService.playBeep(520, 'sine', 0.1);
+      if (sec === 0) soundSynthService.playCelebration();
     }
   }, [type]);
 

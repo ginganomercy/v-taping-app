@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Triangle, Droplet } from 'lucide-react';
-import { WeightEntry } from '../types/workout';
-import { UserProfile } from '../types/profile';
-import { dbService } from '../services/db';
-import { sound } from '../services/sound';
+import { WeightEntry } from '@/types/workout.types';
+import { UserProfile } from '@/types/profile.types';
+import { indexedDbService } from '@/infrastructure/db/indexedDb.service';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
+import { GOLDEN_RATIO_SWR } from '@/constants/biomechanics.constants';
 
 interface VTaperViewProps {
   profile: UserProfile;
@@ -18,26 +19,25 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
   const [weights, setWeights] = useState<WeightEntry[]>([]);
 
   useEffect(() => {
-    dbService.getMetric<number>('shoulder_cm', 112).then(setShoulder);
-    dbService.getMetric<number>('waist_cm', 88).then(setWaist);
-    dbService.getMetric<number>('protein_today', 0).then(setProtein);
-    dbService.getMetric<number>('water_today', 0).then(setWater);
-    dbService.getWeights().then(setWeights);
+    indexedDbService.getMetric<number>('shoulder_cm', 112).then(setShoulder);
+    indexedDbService.getMetric<number>('waist_cm', 88).then(setWaist);
+    indexedDbService.getMetric<number>('protein_today', 0).then(setProtein);
+    indexedDbService.getMetric<number>('water_today', 0).then(setWater);
+    indexedDbService.getWeights().then(setWeights);
   }, []);
 
   const handleShoulderChange = (val: number) => {
     setShoulder(val);
-    dbService.setMetric('shoulder_cm', val);
+    indexedDbService.setMetric('shoulder_cm', val);
   };
 
   const handleWaistChange = (val: number) => {
     setWaist(val);
-    dbService.setMetric('waist_cm', val);
+    indexedDbService.setMetric('waist_cm', val);
   };
 
   const ratio = waist > 0 ? (shoulder / waist).toFixed(3) : '0';
-  const golden = 1.618;
-  const progressPercent = Math.min(100, Math.round((parseFloat(ratio) / golden) * 100));
+  const progressPercent = Math.min(100, Math.round((parseFloat(ratio) / GOLDEN_RATIO_SWR) * 100));
 
   // Dynamic Doritos Silhouette Coordinates based on user profile height
   const centerX = 110;
@@ -52,33 +52,33 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
   const handleAddProtein = (amt: number) => {
     const next = protein + amt;
     setProtein(next);
-    dbService.setMetric('protein_today', next);
-    sound.playBeep(700, 'sine', 0.1);
+    indexedDbService.setMetric('protein_today', next);
+    soundSynthService.playBeep(700, 'sine', 0.1);
   };
 
   const handleAddWater = (amt: number) => {
     const next = Math.min(5, water + amt);
     setWater(next);
-    dbService.setMetric('water_today', next);
-    sound.playBeep(600, 'sine', 0.08);
+    indexedDbService.setMetric('water_today', next);
+    soundSynthService.playBeep(600, 'sine', 0.08);
   };
 
   const handleResetWater = () => {
     setWater(0);
-    dbService.setMetric('water_today', 0);
+    indexedDbService.setMetric('water_today', 0);
   };
 
   const handleSaveWeight = async () => {
     const w = parseFloat(weightInput);
     if (!w || isNaN(w)) return;
-    await dbService.saveWeight(w);
+    await indexedDbService.saveWeight(w);
     setWeightInput('');
-    const updated = await dbService.getWeights();
+    const updated = await indexedDbService.getWeights();
     setWeights(updated);
-    sound.playBeep(700, 'sine', 0.1);
+    soundSynthService.playBeep(700, 'sine', 0.1);
   };
 
-  const diffWaist = Math.max(0, Math.round(waist - shoulder / golden));
+  const diffWaist = Math.max(0, Math.round(waist - shoulder / GOLDEN_RATIO_SWR));
 
   return (
     <div className="space-y-4">
@@ -92,7 +92,7 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
             <div>
               <h3 className="text-sm font-extrabold text-zinc-950">V-Taper Ratio (SWR)</h3>
               <p className="text-[10px] font-bold text-zinc-400 font-mono">
-                Golden Ratio Target: ≥ 1.618
+                Golden Ratio Target: ≥ {GOLDEN_RATIO_SWR}
               </p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
             <span className="text-zinc-600">
               Rasio Anda: <strong className="text-red-600">{ratio}</strong>
             </span>
-            <span className="text-red-600">Target: 1.618</span>
+            <span className="text-red-600">Target: {GOLDEN_RATIO_SWR}</span>
           </div>
           <div className="w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden p-0.5 border border-zinc-200">
             <div
@@ -179,7 +179,7 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
         </div>
 
         <p className="text-xs font-medium text-zinc-600 mt-3 pt-3 border-t border-zinc-100 leading-relaxed">
-          {parseFloat(ratio) >= 1.618 ? (
+          {parseFloat(ratio) >= GOLDEN_RATIO_SWR ? (
             <span className="text-red-600 font-bold">
               🏆 Rasio Emas Tercapai! Proporsi bahu ke pinggang Anda sudah berada dalam kategori V-Taper ideal.
             </span>

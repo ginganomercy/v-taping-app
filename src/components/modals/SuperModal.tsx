@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, ShieldAlert, Timer } from 'lucide-react';
-import { Exercise } from '../types/workout';
+import { Exercise } from '@/types/workout.types';
 
 interface SuperModalProps {
   exercise: Exercise | null;
@@ -40,7 +40,7 @@ export const SuperModal: React.FC<SuperModalProps> = ({
             alt={exercise.title}
             className="w-full h-full object-contain"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = './pull-up.png';
+              (e.target as HTMLImageElement).src = '/pull-up.png';
             }}
           />
         </div>

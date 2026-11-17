@@ -1,6 +1,6 @@
 import React from 'react';
-import { Exercise } from '../types/workout';
-import { WORKOUT_SCHEDULE } from '../data/workoutData';
+import { Exercise } from '@/types/workout.types';
+import { WORKOUT_SCHEDULE } from '@/data/workoutData';
 
 interface LibraryViewProps {
   onOpenModal: (ex: Exercise) => void;
@@ -40,7 +40,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ onOpenModal }) => {
                 alt={ex.title}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = './pull-up.png';
+                  (e.target as HTMLImageElement).src = '/pull-up.png';
                 }}
               />
             </div>
@@ -48,9 +48,8 @@ export const LibraryView: React.FC<LibraryViewProps> = ({ onOpenModal }) => {
               <span className="text-[8px] font-mono uppercase text-red-600 font-black block truncate">
                 {ex.muscle}
               </span>
-              <h4 className="text-xs font-black text-zinc-950 leading-tight truncate mt-0.5">
-                {ex.title}
-              </h4>
+              <h4 className="text-xs font-black text-zinc-950 truncate">{ex.title}</h4>
+              <p className="text-[10px] text-zinc-400 font-medium truncate mt-0.5">{ex.repsLabel}</p>
             </div>
           </div>
         ))}

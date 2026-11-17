@@ -1,7 +1,7 @@
 import React from 'react';
 import { ZoomIn, Timer, Activity, Navigation } from 'lucide-react';
-import { Exercise, SetRecord } from '../types/workout';
-import { sound } from '../services/sound';
+import { Exercise, SetRecord } from '@/types/workout.types';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -25,7 +25,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onOpenGpsTracker
 }) => {
   const handleToggleDone = (setNum: number, currentDone: boolean) => {
-    sound.playBeep(650, 'sine', 0.1);
+    soundSynthService.playBeep(650, 'sine', 0.1);
     const nextState = !currentDone;
     onUpdateSet(setNum, 'done', nextState);
 
@@ -50,7 +50,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             alt={exercise.title}
             className="w-full h-full object-cover group-hover:scale-105 transition"
             onError={(e) => {
-              (e.target as HTMLImageElement).src = './pull-up.png';
+              (e.target as HTMLImageElement).src = '/pull-up.png';
             }}
           />
           <div className="absolute inset-0 bg-black/15 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
@@ -96,7 +96,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     break;
                   }
                 }
-                sound.playBeep(520, 'sine', 0.08);
+                soundSynthService.playBeep(520, 'sine', 0.08);
               }}
               className="btn-spring px-2 py-0.5 rounded-lg bg-red-50 border border-red-200 text-red-700 font-mono text-[10px] font-bold hover:bg-red-100"
             >
@@ -132,7 +132,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onClick={() => {
                 onUpdateSet(1, 'reps', 45);
                 onUpdateSet(1, 'kg', 0);
-                sound.playBeep(580, 'sine', 0.08);
+                soundSynthService.playBeep(580, 'sine', 0.08);
               }}
               className="btn-spring p-1.5 rounded-xl bg-red-50 text-red-700 border border-red-200 text-center hover:bg-red-100"
             >
@@ -144,7 +144,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onClick={() => {
                 onUpdateSet(1, 'reps', 30);
                 onUpdateSet(1, 'kg', 3.5);
-                sound.playBeep(580, 'sine', 0.08);
+                soundSynthService.playBeep(580, 'sine', 0.08);
               }}
               className="btn-spring p-1.5 rounded-xl bg-zinc-50 text-zinc-700 border border-zinc-200 text-center hover:bg-red-50 hover:text-red-700"
             >
@@ -156,7 +156,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onClick={() => {
                 onUpdateSet(1, 'reps', 28);
                 onUpdateSet(1, 'kg', 5.0);
-                sound.playBeep(580, 'sine', 0.08);
+                soundSynthService.playBeep(580, 'sine', 0.08);
               }}
               className="btn-spring p-1.5 rounded-xl bg-zinc-50 text-zinc-700 border border-zinc-200 text-center hover:bg-red-50 hover:text-red-700"
             >

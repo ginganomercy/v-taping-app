@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Dumbbell, Trophy, Medal } from 'lucide-react';
-import { DaySession, Exercise, SetRecord } from '../types/workout';
-import { ExerciseCard } from './ExerciseCard';
-import { sound } from '../services/sound';
+import { DaySession, Exercise, SetRecord } from '@/types/workout.types';
+import { ExerciseCard } from '@/components/workout/ExerciseCard';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 
 interface WorkoutViewProps {
   session: DaySession;
@@ -44,7 +44,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
   const completionPercent = totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0;
 
   const handleFinish = () => {
-    sound.playCelebration();
+    soundSynthService.playCelebration();
     setShowFinishModal(true);
   };
 

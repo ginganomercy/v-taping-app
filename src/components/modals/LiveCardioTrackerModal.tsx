@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { X, Play, Pause, CheckCircle2, Flame, Gauge, Clock, Navigation } from 'lucide-react';
-import { gpsTracker, GpsTelemetry } from '../services/gpsTracker';
-import { sound } from '../services/sound';
+import { gpsTrackerService } from '@/infrastructure/sensors/gpsTracker.service';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
+import { GpsTelemetry, GpsTrackingResult } from '@/types/telemetry.types';
 
 interface LiveCardioTrackerModalProps {
   isOpen: boolean;
   userWeightKg: number;
   onClose: () => void;
-  onFinish: (result: { distanceKm: number; durationMin: number; caloriesKcal: number }) => void;
+  onFinish: (result: GpsTrackingResult) => void;
 }
 
 export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
@@ -33,13 +34,13 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    gpsTracker.startTracking(userWeightKg, (data) => {
+    gpsTrackerService.startTracking(userWeightKg, (data) => {
       setTelemetry(data);
     });
 
     return () => {
-      if (gpsTracker.isTracking) {
-        gpsTracker.stopTracking();
+      if (gpsTrackerService.isTracking) {
+        gpsTrackerService.stopTracking();
       }
     };
   }, [isOpen, userWeightKg]);
@@ -53,8 +54,8 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
   };
 
   const handleFinishSession = () => {
-    sound.playCelebration();
-    const result = gpsTracker.stopTracking();
+    soundSynthService.playCelebration();
+    const result = gpsTrackerService.stopTracking();
     onFinish(result);
   };
 

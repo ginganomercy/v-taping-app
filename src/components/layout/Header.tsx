@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Flame, Timer, Volume2, VolumeX, User } from 'lucide-react';
-import { sound } from '../services/sound';
-import { UserProfile } from '../types/profile';
+import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
+import { UserProfile } from '@/types/profile.types';
 
 interface HeaderProps {
   profile: UserProfile;
@@ -16,12 +16,14 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenRestTimer,
   quickTimerSeconds
 }) => {
-  const [isMuted, setIsMuted] = useState(sound.isMuted);
+  const [isMuted, setIsMuted] = useState(soundSynthService.isMuted);
 
   const toggleMute = () => {
-    sound.isMuted = !sound.isMuted;
-    setIsMuted(sound.isMuted);
-    if (!sound.isMuted) sound.playBeep(600, 'sine', 0.1);
+    soundSynthService.isMuted = !soundSynthService.isMuted;
+    setIsMuted(soundSynthService.isMuted);
+    if (!soundSynthService.isMuted) {
+      soundSynthService.playBeep(600, 'sine', 0.1);
+    }
   };
 
   const currentDate = new Date().toLocaleDateString('id-ID', {
@@ -68,12 +70,13 @@ export const Header: React.FC<HeaderProps> = ({
           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </button>
 
-        {/* Rest Timer Button */}
+        {/* Quick Rest Timer Trigger */}
         <button
           onClick={onOpenRestTimer}
-          className="btn-spring flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200/70 text-red-600 font-mono text-xs font-bold shadow-sm"
+          className="btn-spring flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-red-600 text-white font-mono font-bold text-[10px] shadow-sm shadow-red-500/25"
+          title="Buka Rest Timer"
         >
-          <Timer className="w-4 h-4 text-red-600" />
+          <Timer className="w-3.5 h-3.5" />
           <span>{quickTimerSeconds}s</span>
         </button>
       </div>
