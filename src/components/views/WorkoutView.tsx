@@ -11,6 +11,7 @@ interface WorkoutViewProps {
   baselinePullUps: number;
   backpackPresets: number[];
   onUpdateSet: (exerciseId: string, setNum: number, field: keyof SetRecord, value: unknown) => void;
+  onUpdateSetRecord?: (exerciseId: string, setNum: number, record: Partial<SetRecord>) => void;
   onOpenModal: (ex: Exercise) => void;
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
@@ -23,6 +24,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
   baselinePullUps,
   backpackPresets,
   onUpdateSet,
+  onUpdateSetRecord,
   onOpenModal,
   onOpenNegativeTimer,
   onPromptRestTimer,
@@ -106,6 +108,11 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
               setsData={dayData[ex.id] || {}}
               backpackPresets={backpackPresets}
               onUpdateSet={(setNum, field, val) => onUpdateSet(ex.id, setNum, field, val)}
+              onUpdateSetRecord={
+                onUpdateSetRecord
+                  ? (setNum, record) => onUpdateSetRecord(ex.id, setNum, record)
+                  : undefined
+              }
               onOpenModal={() => onOpenModal(exerciseWithCalibration)}
               onOpenNegativeTimer={onOpenNegativeTimer}
               onPromptRestTimer={onPromptRestTimer}

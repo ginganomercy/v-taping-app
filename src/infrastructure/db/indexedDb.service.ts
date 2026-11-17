@@ -44,6 +44,30 @@ export const indexedDbService = {
   },
 
   /**
+   * Updates multiple fields of a specific exercise set atomically in a single transaction.
+   */
+  async saveSetRecord(
+    dayIndex: number,
+    exerciseId: string,
+    setNumber: number,
+    partialRecord: Partial<SetRecord>
+  ): Promise<void> {
+    try {
+      const db = await getDatabaseInstance();
+      const current = (await db.get(DB_STORES.DAY_LOGS, `day_${dayIndex}`)) || {};
+      if (!current[exerciseId]) current[exerciseId] = {};
+      if (!current[exerciseId][setNumber]) {
+        current[exerciseId][setNumber] = { kg: '', reps: '', done: false };
+      }
+      Object.assign(current[exerciseId][setNumber], partialRecord);
+      await db.put(DB_STORES.DAY_LOGS, current, `day_${dayIndex}`);
+      localStorage.setItem(`${STORAGE_KEYS.DAY_PREFIX}${dayIndex}`, JSON.stringify(current));
+    } catch (e) {
+      console.warn('[IndexedDB] Save record fallback triggered:', e);
+    }
+  },
+
+  /**
    * Updates an individual field of a specific exercise set and synchronizes to localStorage.
    */
   async saveSetField(

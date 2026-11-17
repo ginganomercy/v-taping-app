@@ -40,9 +40,46 @@ export function useWorkoutSession(initialDay?: DayIndex) {
       field: keyof SetRecord,
       value: unknown
     ): Promise<void> => {
+      // Optimistic update for instant UI feedback
+      setDayData((prev) => {
+        const copy = { ...prev };
+        if (!copy[exerciseId]) copy[exerciseId] = {};
+        copy[exerciseId] = {
+          ...copy[exerciseId],
+          [setNum]: {
+            ...(copy[exerciseId][setNum] || { kg: '', reps: '', done: false }),
+            [field]: value
+          }
+        };
+        return copy;
+      });
+
       await indexedDbService.saveSetField(currentDay, exerciseId, setNum, field, value);
-      const updated = await indexedDbService.getDayData(currentDay);
-      setDayData(updated);
+    },
+    [currentDay]
+  );
+
+  const handleUpdateSetRecord = useCallback(
+    async (
+      exerciseId: string,
+      setNum: number,
+      partialRecord: Partial<SetRecord>
+    ): Promise<void> => {
+      // Optimistic batch update for instant UI feedback
+      setDayData((prev) => {
+        const copy = { ...prev };
+        if (!copy[exerciseId]) copy[exerciseId] = {};
+        copy[exerciseId] = {
+          ...copy[exerciseId],
+          [setNum]: {
+            ...(copy[exerciseId][setNum] || { kg: '', reps: '', done: false }),
+            ...partialRecord
+          }
+        };
+        return copy;
+      });
+
+      await indexedDbService.saveSetRecord(currentDay, exerciseId, setNum, partialRecord);
     },
     [currentDay]
   );
@@ -53,6 +90,7 @@ export function useWorkoutSession(initialDay?: DayIndex) {
     dayData,
     setDayData,
     isLoading,
-    handleUpdateSet
+    handleUpdateSet,
+    handleUpdateSetRecord
   };
 }

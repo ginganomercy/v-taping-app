@@ -23,7 +23,8 @@ export const App: React.FC = () => {
   const [activeCardioPhase, setActiveCardioPhase] = useState<CardioPhase>(1);
 
   // Application Hooks Layer
-  const { currentDay, setCurrentDay, dayData, handleUpdateSet } = useWorkoutSession();
+  const { currentDay, setCurrentDay, dayData, handleUpdateSet, handleUpdateSetRecord } =
+    useWorkoutSession();
   const { isTimerOpen, timerType, timerDuration, openRestTimer, openNegativeTimer, closeTimer } =
     useAcousticTimer();
   const { handleTouchStart, handleTouchEnd } = useSwipeNavigation(
@@ -42,11 +43,13 @@ export const App: React.FC = () => {
     const currentSession = WORKOUT_SCHEDULE[currentDay];
     const cardioExercise = currentSession.exercises.find((ex) => ex.isCardio);
     if (cardioExercise) {
-      await handleUpdateSet(cardioExercise.id, 1, 'distanceKm', result.distanceKm);
-      await handleUpdateSet(cardioExercise.id, 1, 'kg', result.distanceKm);
-      await handleUpdateSet(cardioExercise.id, 1, 'durationMin', result.durationMin);
-      await handleUpdateSet(cardioExercise.id, 1, 'reps', result.durationMin);
-      await handleUpdateSet(cardioExercise.id, 1, 'done', true);
+      await handleUpdateSetRecord(cardioExercise.id, 1, {
+        distanceKm: result.distanceKm,
+        kg: result.distanceKm,
+        durationMin: result.durationMin,
+        reps: result.durationMin,
+        done: true
+      });
     }
   };
 
@@ -75,6 +78,7 @@ export const App: React.FC = () => {
               baselinePullUps={profile.baselinePullUps}
               backpackPresets={profile.backpackPresetsKg}
               onUpdateSet={handleUpdateSet}
+              onUpdateSetRecord={handleUpdateSetRecord}
               onOpenModal={setSelectedExercise}
               onOpenNegativeTimer={openNegativeTimer}
               onPromptRestTimer={() => openRestTimer(60)}

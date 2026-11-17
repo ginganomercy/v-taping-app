@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ZoomIn, Timer, Activity, Navigation, CheckCircle2 } from 'lucide-react';
 import { Exercise, SetRecord } from '@/types/workout.types';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
@@ -9,6 +9,7 @@ interface ExerciseCardProps {
   setsData: Record<number, SetRecord>;
   backpackPresets: number[];
   onUpdateSet: (setNum: number, field: keyof SetRecord, value: unknown) => void;
+  onUpdateSetRecord?: (setNum: number, record: Partial<SetRecord>) => void;
   onOpenModal: () => void;
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
@@ -20,6 +21,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   setsData,
   backpackPresets,
   onUpdateSet,
+  onUpdateSetRecord,
   onOpenModal,
   onOpenNegativeTimer,
   onPromptRestTimer,
@@ -28,17 +30,38 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const isBackpackExercise = exercise.equip.toLowerCase().includes('tas');
   const isCardioExercise = exercise.isCardio || exercise.pattern.toLowerCase().includes('aerobic');
 
-  // Dynamic Cardio Phase Selection
-  const selectedPhase = ((setsData[1]?.phase as CardioPhase) || 1) as CardioPhase;
+  // Dynamic Cardio Phase Selection with Local State for 0ms Instant UI Response
+  const [localPhase, setLocalPhase] = useState<CardioPhase>(() => {
+    return ((setsData[1]?.phase as CardioPhase) || 1) as CardioPhase;
+  });
+
+  useEffect(() => {
+    if (setsData[1]?.phase) {
+      setLocalPhase(setsData[1].phase as CardioPhase);
+    }
+  }, [setsData[1]?.phase]);
+
+  const selectedPhase = localPhase;
   const phaseConfig = CARDIO_PHASES[selectedPhase];
 
   const handleSelectPhase = (phase: CardioPhase) => {
+    setLocalPhase(phase);
     const config = CARDIO_PHASES[phase];
-    onUpdateSet(1, 'phase', phase);
-    onUpdateSet(1, 'reps', config.repsMinutes);
-    onUpdateSet(1, 'distanceKm', config.targetDistanceKm);
-    onUpdateSet(1, 'kg', config.targetDistanceKm);
     soundSynthService.playBeep(phase === 1 ? 520 : phase === 2 ? 650 : 780, 'sine', 0.1);
+
+    if (onUpdateSetRecord) {
+      onUpdateSetRecord(1, {
+        phase,
+        reps: config.repsMinutes,
+        distanceKm: config.targetDistanceKm,
+        kg: config.targetDistanceKm
+      });
+    } else {
+      onUpdateSet(1, 'phase', phase);
+      onUpdateSet(1, 'reps', config.repsMinutes);
+      onUpdateSet(1, 'distanceKm', config.targetDistanceKm);
+      onUpdateSet(1, 'kg', config.targetDistanceKm);
+    }
   };
 
   const handleToggleDone = (setNum: number, currentDone: boolean) => {
