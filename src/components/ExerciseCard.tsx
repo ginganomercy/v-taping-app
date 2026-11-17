@@ -1,5 +1,5 @@
 import React from 'react';
-import { ZoomIn, Timer } from 'lucide-react';
+import { ZoomIn, Timer, Activity } from 'lucide-react';
 import { Exercise, SetRecord } from '../types/workout';
 import { sound } from '../services/sound';
 
@@ -33,6 +33,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   };
 
   const isBackpackExercise = exercise.equip.toLowerCase().includes('tas');
+  const isCardioExercise = exercise.isCardio || exercise.pattern.toLowerCase().includes('aerobic');
 
   return (
     <div className="p-4 rounded-3xl bg-white border border-zinc-200/90 shadow-card-soft space-y-3">
@@ -87,7 +88,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               key={kg}
               type="button"
               onClick={() => {
-                // Apply to first undone set
                 for (let s = 1; s <= exercise.sets; s++) {
                   if (!setsData[s]?.done) {
                     onUpdateSet(s, 'kg', kg);
@@ -104,18 +104,66 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
       )}
 
+      {/* Hybrid Cardio Mode Presets if cardio */}
+      {isCardioExercise && (
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-zinc-400">
+            <Activity className="w-3.5 h-3.5 text-red-600" />
+            <span>PILIH FASE HYBRID RUNNER:</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono font-bold">
+            <button
+              type="button"
+              onClick={() => {
+                onUpdateSet(1, 'reps', 45);
+                onUpdateSet(1, 'kg', 0);
+                sound.playBeep(580, 'sine', 0.08);
+              }}
+              className="btn-spring p-1.5 rounded-xl bg-red-50 text-red-700 border border-red-200 text-center hover:bg-red-100"
+            >
+              <span className="block text-[8px] opacity-75">FASE 1</span>
+              <span>45m Jalan</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onUpdateSet(1, 'reps', 30);
+                onUpdateSet(1, 'kg', 3.5);
+                sound.playBeep(580, 'sine', 0.08);
+              }}
+              className="btn-spring p-1.5 rounded-xl bg-zinc-50 text-zinc-700 border border-zinc-200 text-center hover:bg-red-50 hover:text-red-700"
+            >
+              <span className="block text-[8px] opacity-75">FASE 2</span>
+              <span>Walk / Jog</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onUpdateSet(1, 'reps', 28);
+                onUpdateSet(1, 'kg', 5.0);
+                sound.playBeep(580, 'sine', 0.08);
+              }}
+              className="btn-spring p-1.5 rounded-xl bg-zinc-50 text-zinc-700 border border-zinc-200 text-center hover:bg-red-50 hover:text-red-700"
+            >
+              <span className="block text-[8px] opacity-75">FASE 3</span>
+              <span>5K Run</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Per-Set Rows Table */}
       <div className="space-y-1.5 pt-2 border-t border-zinc-100">
         <div className="grid grid-cols-12 text-[10px] font-mono font-bold text-zinc-400 px-1 mb-1">
-          <span className="col-span-2 text-center">SET</span>
-          <span className="col-span-4">BEBAN TAS</span>
-          <span className="col-span-3">REPS</span>
+          <span className="col-span-2 text-center">{isCardioExercise ? 'SESI' : 'SET'}</span>
+          <span className="col-span-4">{isCardioExercise ? 'JARAK (KM)' : 'BEBAN TAS'}</span>
+          <span className="col-span-3">{isCardioExercise ? 'MENIT' : 'REPS'}</span>
           <span className="col-span-3 text-right">STATUS</span>
         </div>
 
         {Array.from({ length: exercise.sets }, (_, i) => i + 1).map((setNum) => {
           const item = setsData[setNum] || {
-            kg: exercise.defaultKg || '',
+            kg: isCardioExercise ? 0 : (exercise.defaultKg || ''),
             reps: exercise.targetReps || '',
             done: false
           };
@@ -131,20 +179,22 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 #{setNum}
               </span>
 
-              {/* Input Beban Tas (kg) */}
+              {/* Input Beban Tas / Jarak KM */}
               <div className="col-span-4 flex items-center bg-white border border-zinc-200 rounded-lg px-2 py-1 shadow-sm">
                 <input
                   type="number"
-                  step="0.5"
-                  placeholder={String(exercise.defaultKg || 0)}
+                  step="0.1"
+                  placeholder={isCardioExercise ? "0.0" : String(exercise.defaultKg || 0)}
                   value={item.kg !== undefined ? item.kg : ''}
                   onChange={(e) => onUpdateSet(setNum, 'kg', e.target.value)}
                   className="w-full text-xs font-mono font-bold text-zinc-900 focus:outline-none"
                 />
-                <span className="text-[9px] font-mono text-zinc-400 ml-1">kg</span>
+                <span className="text-[9px] font-mono text-zinc-400 ml-1">
+                  {isCardioExercise ? 'km' : 'kg'}
+                </span>
               </div>
 
-              {/* Input Repetisi Aktual */}
+              {/* Input Repetisi / Menit Durasi */}
               <div className="col-span-3 flex items-center bg-white border border-zinc-200 rounded-lg px-2 py-1 shadow-sm">
                 <input
                   type="number"
@@ -153,6 +203,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   onChange={(e) => onUpdateSet(setNum, 'reps', e.target.value)}
                   className="w-full text-xs font-mono font-bold text-zinc-900 focus:outline-none"
                 />
+                {isCardioExercise && <span className="text-[9px] font-mono text-zinc-400 ml-0.5">m</span>}
               </div>
 
               {/* Done Check Button */}

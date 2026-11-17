@@ -13,6 +13,7 @@ export interface Exercise {
   repsLabel: string;
   image: string;
   hasNegativeTimer?: boolean;
+  isCardio?: boolean;
   tip: string;
 }
 
@@ -30,6 +31,8 @@ export interface DaySession {
 export interface SetRecord {
   kg: number | string;
   reps: number | string;
+  distanceKm?: number | string;
+  durationMin?: number | string;
   done: boolean;
 }
 

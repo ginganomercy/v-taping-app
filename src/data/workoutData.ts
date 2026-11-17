@@ -154,24 +154,25 @@ export const WORKOUT_SCHEDULE: Record<DayIndex, DaySession> = {
     dayIndex: 3,
     dayShort: "RAB",
     dayName: "Rabu",
-    title: "Kardio Zona 2 (Rest Aktif)",
-    focus: "OKSIDASI LEMAK",
-    desc: "Jalan cepat 45 menit untuk membakar lemak tanpa merusak otot.",
-    alert: "🚶 Metode Zona 2: Jangan berlari cepat atau sprint. Jalan cepat dengan napas stabil menjaga massa otot bahu dan tidak menghentak pinggul.",
+    title: "Hybrid Cardio: Aerobic Engine & Fat Burn",
+    focus: "HYBRID RUNNER (FASE 1)",
+    desc: "Membangun kapasitas VO2 Max dan membakar lemak tanpa mengikis massa otot V-Taper.",
+    alert: "🏃 Protokol Hybrid Runner (Rabu): Hari ini utamakan JALAN CEPAT 40–45 menit di lintasan datar. Biarkan tendon pinggul luar pulih dari benturan, sementara jantung dan paru dilatih di Zona 2 (115–130 BPM). Tubuh V-Taper Anda akan membuat lari 5K terasa melayang saat beban 13kg lemak terkelupas!",
     exercises: [
       {
-        id: "brisk-walking",
-        title: "Brisk Walking / Jalan Cepat",
-        muscle: "Sistem Kardiorespirasi & Asam Lemak",
+        id: "hybrid-cardio-engine",
+        title: "Hybrid Cardio: Fase 1 Jalan Cepat (Pondasi Lari 5K)",
+        muscle: "Kapasitas Aerobik & Oksidasi Lemak",
         equip: "Sepatu Lari",
-        pattern: "Aerobic LISS",
-        tempo: "115-130 BPM",
+        pattern: "Aerobic LISS / Hybrid Runner",
+        tempo: "115-130 BPM (Zona 2)",
         sets: 1,
         targetReps: 45,
         defaultKg: 0,
-        repsLabel: "40 – 45 Menit Nonstop",
+        isCardio: true,
+        repsLabel: "40 – 45 Menit Nonstop (Pace Stabil)",
         image: "./controlled-bodyweight-squat.png",
-        tip: "Pilih rute datar. Pertahankan kecepatan di mana Anda masih bisa berbicara 1 kalimat penuh tanpa terengah-engah. Target detak jantung 115-130 BPM."
+        tip: "Progresi Hybrid 3 Fase: [Fase 1 (Saat Ini, BB 79kg)]: Jalan cepat 40-45m langkah lebar tanpa menghentak pinggul. [Fase 2 (BB ~75kg)]: Interval 2m jalan + 1m jog santai. [Fase 3 (BB <70kg)]: Lari kontinu 5KM. Fisik V-Taper dan lari kuat terbangun bersamaan!"
       }
     ]
   },
@@ -299,24 +300,25 @@ export const WORKOUT_SCHEDULE: Record<DayIndex, DaySession> = {
     dayIndex: 6,
     dayShort: "SAB",
     dayName: "Sabtu",
-    title: "Kardio Zona 2 (Rest Aktif)",
-    focus: "OKSIDASI LEMAK",
-    desc: "Sesi kedua jalan cepat 45 menit untuk mempertahankan defisit mingguan.",
-    alert: "👟 Konsistensi: Lakukan sesi ini di pagi hari sebelum sarapan atau sore hari.",
+    title: "Hybrid Cardio: Zona 2 & Ketahanan Paru",
+    focus: "KETAHANAN LARI & VO2 MAX",
+    desc: "Sesi kedua kardio hybrid mingguan untuk mempertahankan defisit energi dan daya tahan kaki.",
+    alert: "👟 Konsistensi Pelari: Lakukan sesi ini di pagi hari. Targetkan napas berirama dan langkah teratur untuk membangun fondasi lari 5K tanpa membebani sendi pinggul.",
     exercises: [
       {
-        id: "brisk-walking-2",
-        title: "Brisk Walking / Jalan Cepat",
-        muscle: "Defisit Kalori & Kesehatan Kardio",
+        id: "hybrid-cardio-sat",
+        title: "Hybrid Cardio: Ketahanan Aerobik 45 Menit",
+        muscle: "Kapasitas Paru & Ketahanan Lari",
         equip: "Sepatu Lari",
-        pattern: "Aerobic LISS",
+        pattern: "Aerobic LISS / Hybrid Runner",
         tempo: "115-130 BPM",
         sets: 1,
         targetReps: 45,
         defaultKg: 0,
+        isCardio: true,
         repsLabel: "40 – 45 Menit Nonstop",
         image: "./controlled-bodyweight-squat.png",
-        tip: "Pertahankan ritme langkah cepat namun rileks. Jangan sampai detak jantung melonjak ke zona anaerobik."
+        tip: "Pertahankan ritme langkah cepat namun rileks. Tubuh tegak, pandangan ke depan. Ini melatih daya tahan kardiovaskular atlet bela diri dan pelari."
       }
     ]
   },
