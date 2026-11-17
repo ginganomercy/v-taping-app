@@ -40,3 +40,10 @@ export interface WeightEntry {
   date: string;
   weight: number;
 }
+
+export interface GpsTrackingResult {
+  distanceKm: number;
+  durationSeconds: number;
+  averageSpeedKmh: number;
+  caloriesKcal: number;
+}

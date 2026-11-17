@@ -14,6 +14,7 @@ import { LibraryView } from './components/LibraryView';
 import { SuperModal } from './components/SuperModal';
 import { TimerModal } from './components/TimerModal';
 import { ProfileModal } from './components/ProfileModal';
+import { LiveCardioTrackerModal } from './components/LiveCardioTrackerModal';
 import { BottomNav, TabType } from './components/BottomNav';
 
 export const App: React.FC = () => {
@@ -34,6 +35,9 @@ export const App: React.FC = () => {
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [timerType, setTimerType] = useState<'rest' | 'negative'>('rest');
   const [timerDuration, setTimerDuration] = useState(60);
+
+  // GPS Cardio Tracker State
+  const [isGpsModalOpen, setIsGpsModalOpen] = useState(false);
 
   // Touch Swipe Coordinate Refs
   const touchStartX = useRef<number>(0);
@@ -58,6 +62,21 @@ export const App: React.FC = () => {
   const handleSaveProfile = async (updated: UserProfile) => {
     setProfile(updated);
     await storage.saveProfile(updated);
+  };
+
+  const handleCardioFinish = async (result: { distanceKm: number; durationMin: number; caloriesKcal: number }) => {
+    setIsGpsModalOpen(false);
+    const currentSession = WORKOUT_SCHEDULE[currentDay];
+    const cardioExercise = currentSession.exercises.find((ex) => ex.isCardio);
+    if (cardioExercise) {
+      await dbService.saveSetField(currentDay, cardioExercise.id, 1, 'distanceKm', result.distanceKm);
+      await dbService.saveSetField(currentDay, cardioExercise.id, 1, 'kg', result.distanceKm);
+      await dbService.saveSetField(currentDay, cardioExercise.id, 1, 'durationMin', result.durationMin);
+      await dbService.saveSetField(currentDay, cardioExercise.id, 1, 'reps', result.durationMin);
+      await dbService.saveSetField(currentDay, cardioExercise.id, 1, 'done', true);
+      const updated = await dbService.getDayData(currentDay);
+      setDayData(updated);
+    }
   };
 
   // Swipe Gesture Handling for Workout Days
@@ -140,6 +159,7 @@ export const App: React.FC = () => {
               onOpenModal={(ex) => setSelectedExercise(ex)}
               onOpenNegativeTimer={openNegativeTimer}
               onPromptRestTimer={() => openRestTimer(60)}
+              onOpenGpsTracker={() => setIsGpsModalOpen(true)}
             />
           </div>
         )}
@@ -175,6 +195,14 @@ export const App: React.FC = () => {
         type={timerType}
         initialSeconds={timerDuration}
         onClose={() => setIsTimerOpen(false)}
+      />
+
+      {/* Live GPS Cardio Speedometer Tracker Modal */}
+      <LiveCardioTrackerModal
+        isOpen={isGpsModalOpen}
+        userWeightKg={profile.currentWeightKg}
+        onClose={() => setIsGpsModalOpen(false)}
+        onFinish={handleCardioFinish}
       />
     </div>
   );

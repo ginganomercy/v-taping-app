@@ -31,7 +31,7 @@ class SoundSynth {
       osc.start();
       osc.stop(this.ctx.currentTime + duration);
     } catch {
-      // Audio might be blocked before first user gesture
+      // Audio blocked before user gesture
     }
   }
 
@@ -44,6 +44,22 @@ class SoundSynth {
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try {
         navigator.vibrate([100, 50, 150]);
+      } catch {
+        // Haptic optional
+      }
+    }
+  }
+
+  public playMilestone1KmAlert() {
+    if (this.isMuted) return;
+    // Ascending double chime for 1KM accomplishment
+    [587.33, 880.00, 1174.66].forEach((freq, idx) => {
+      setTimeout(() => this.playBeep(freq, 'sine', 0.18), idx * 130);
+    });
+
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate([200, 100, 200]);
       } catch {
         // Haptic optional
       }

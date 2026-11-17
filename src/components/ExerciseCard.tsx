@@ -1,5 +1,5 @@
 import React from 'react';
-import { ZoomIn, Timer, Activity } from 'lucide-react';
+import { ZoomIn, Timer, Activity, Navigation } from 'lucide-react';
 import { Exercise, SetRecord } from '../types/workout';
 import { sound } from '../services/sound';
 
@@ -11,6 +11,7 @@ interface ExerciseCardProps {
   onOpenModal: () => void;
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
+  onOpenGpsTracker?: () => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -20,7 +21,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onUpdateSet,
   onOpenModal,
   onOpenNegativeTimer,
-  onPromptRestTimer
+  onPromptRestTimer,
+  onOpenGpsTracker
 }) => {
   const handleToggleDone = (setNum: number, currentDone: boolean) => {
     sound.playBeep(650, 'sine', 0.1);
@@ -104,13 +106,26 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
       )}
 
-      {/* Hybrid Cardio Mode Presets if cardio */}
+      {/* Hybrid Cardio Mode Presets & Live GPS Button */}
       {isCardioExercise && (
-        <div className="space-y-2 pt-1">
+        <div className="space-y-2.5 pt-1">
+          {/* Live GPS Launcher Button */}
+          {onOpenGpsTracker && (
+            <button
+              type="button"
+              onClick={onOpenGpsTracker}
+              className="btn-spring w-full py-3 px-3 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-xs shadow-md shadow-red-600/30 flex items-center justify-center gap-2"
+            >
+              <Navigation className="w-4 h-4" />
+              <span>MULAI LACAK GPS LIVE (SPEED & JARAK)</span>
+            </button>
+          )}
+
           <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-zinc-400">
             <Activity className="w-3.5 h-3.5 text-red-600" />
             <span>PILIH FASE HYBRID RUNNER:</span>
           </div>
+
           <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono font-bold">
             <button
               type="button"
@@ -183,10 +198,21 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <div className="col-span-4 flex items-center bg-white border border-zinc-200 rounded-lg px-2 py-1 shadow-sm">
                 <input
                   type="number"
-                  step="0.1"
+                  step="0.01"
                   placeholder={isCardioExercise ? "0.0" : String(exercise.defaultKg || 0)}
-                  value={item.kg !== undefined ? item.kg : ''}
-                  onChange={(e) => onUpdateSet(setNum, 'kg', e.target.value)}
+                  value={
+                    isCardioExercise
+                      ? (item.distanceKm !== undefined && item.distanceKm !== '' ? item.distanceKm : (item.kg ?? ''))
+                      : (item.kg ?? '')
+                  }
+                  onChange={(e) => {
+                    if (isCardioExercise) {
+                      onUpdateSet(setNum, 'distanceKm', e.target.value);
+                      onUpdateSet(setNum, 'kg', e.target.value);
+                    } else {
+                      onUpdateSet(setNum, 'kg', e.target.value);
+                    }
+                  }}
                   className="w-full text-xs font-mono font-bold text-zinc-900 focus:outline-none"
                 />
                 <span className="text-[9px] font-mono text-zinc-400 ml-1">
