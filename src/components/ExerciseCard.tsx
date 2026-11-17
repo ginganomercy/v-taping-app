@@ -6,6 +6,7 @@ import { sound } from '../services/sound';
 interface ExerciseCardProps {
   exercise: Exercise;
   setsData: Record<number, SetRecord>;
+  backpackPresets: number[];
   onUpdateSet: (setNum: number, field: keyof SetRecord, value: unknown) => void;
   onOpenModal: () => void;
   onOpenNegativeTimer: () => void;
@@ -15,6 +16,7 @@ interface ExerciseCardProps {
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exercise,
   setsData,
+  backpackPresets,
   onUpdateSet,
   onOpenModal,
   onOpenNegativeTimer,
@@ -29,6 +31,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       setTimeout(() => onPromptRestTimer(), 250);
     }
   };
+
+  const isBackpackExercise = exercise.equip.toLowerCase().includes('tas');
 
   return (
     <div className="p-4 rounded-3xl bg-white border border-zinc-200/90 shadow-card-soft space-y-3">
@@ -73,6 +77,32 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           </button>
         )}
       </div>
+
+      {/* Backpack Quick Chips if relevant */}
+      {isBackpackExercise && backpackPresets && backpackPresets.length > 0 && (
+        <div className="flex items-center gap-1.5 pt-1">
+          <span className="text-[9px] font-mono font-bold text-zinc-400">PINTAS BEBAN:</span>
+          {backpackPresets.map((kg) => (
+            <button
+              key={kg}
+              type="button"
+              onClick={() => {
+                // Apply to first undone set
+                for (let s = 1; s <= exercise.sets; s++) {
+                  if (!setsData[s]?.done) {
+                    onUpdateSet(s, 'kg', kg);
+                    break;
+                  }
+                }
+                sound.playBeep(520, 'sine', 0.08);
+              }}
+              className="btn-spring px-2 py-0.5 rounded-lg bg-red-50 border border-red-200 text-red-700 font-mono text-[10px] font-bold hover:bg-red-100"
+            >
+              +{kg}kg
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Per-Set Rows Table */}
       <div className="space-y-1.5 pt-2 border-t border-zinc-100">

@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Triangle, Droplet } from 'lucide-react';
 import { WeightEntry } from '../types/workout';
+import { UserProfile } from '../types/profile';
 import { dbService } from '../services/db';
 import { sound } from '../services/sound';
 
-export const VTaperView: React.FC = () => {
+interface VTaperViewProps {
+  profile: UserProfile;
+}
+
+export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
   const [shoulder, setShoulder] = useState<number>(112);
   const [waist, setWaist] = useState<number>(88);
   const [protein, setProtein] = useState<number>(0);
@@ -13,7 +18,6 @@ export const VTaperView: React.FC = () => {
   const [weights, setWeights] = useState<WeightEntry[]>([]);
 
   useEffect(() => {
-    // Load persisted metrics
     dbService.getMetric<number>('shoulder_cm', 112).then(setShoulder);
     dbService.getMetric<number>('waist_cm', 88).then(setWaist);
     dbService.getMetric<number>('protein_today', 0).then(setProtein);
@@ -35,10 +39,11 @@ export const VTaperView: React.FC = () => {
   const golden = 1.618;
   const progressPercent = Math.min(100, Math.round((parseFloat(ratio) / golden) * 100));
 
-  // Dynamic Doritos Silhouette Coordinates
+  // Dynamic Doritos Silhouette Coordinates based on user profile height
   const centerX = 110;
-  const topHalfWidth = Math.min(95, Math.max(60, (shoulder / 170) * 125));
-  const bottomHalfWidth = Math.min(85, Math.max(40, (waist / 170) * 110));
+  const heightRatio = profile.heightCm / 170;
+  const topHalfWidth = Math.min(95, Math.max(60, (shoulder / (170 * heightRatio)) * 125));
+  const bottomHalfWidth = Math.min(85, Math.max(40, (waist / (170 * heightRatio)) * 110));
   const x1 = Math.round(centerX - topHalfWidth);
   const x2 = Math.round(centerX + topHalfWidth);
   const x3 = Math.round(centerX + bottomHalfWidth);
@@ -99,7 +104,7 @@ export const VTaperView: React.FC = () => {
         {/* Dynamic Doritos Polygon SVG */}
         <div className="w-full bg-slate-50 rounded-2xl p-4 border border-zinc-200/80 mb-4 flex flex-col items-center justify-center relative">
           <div className="text-[10px] font-mono uppercase font-bold text-zinc-400 mb-2 flex items-center gap-1">
-            <Triangle className="w-3 h-3 text-red-600 rotate-180" /> Visualisasi Bentuk Torso Doritos
+            <Triangle className="w-3 h-3 text-red-600 rotate-180" /> Visualisasi Bentuk Torso Doritos ({profile.name})
           </div>
           <svg width="220" height="110" viewBox="0 0 220 110" className="transition-all duration-300">
             {/* Reference Golden Ratio Line (Dashed) */}
@@ -131,7 +136,7 @@ export const VTaperView: React.FC = () => {
           </svg>
         </div>
 
-        {/* Sliders / Inputs */}
+        {/* Inputs */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-slate-50 p-3 rounded-2xl border border-zinc-200">
             <label className="text-[10px] text-zinc-500 font-bold block mb-1">
@@ -191,17 +196,19 @@ export const VTaperView: React.FC = () => {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h3 className="text-sm font-extrabold text-zinc-950">Target Nutrisi Harian</h3>
-            <p className="text-[10px] text-zinc-400 font-bold">Target Defisit: 79 kg → 66 kg</p>
+            <p className="text-[10px] text-zinc-400 font-bold">
+              Target Defisit: {profile.startWeightKg} kg → {profile.targetWeightKg} kg
+            </p>
           </div>
           <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-600 border border-red-200 text-xs font-mono font-extrabold">
-            1.800 kcal
+            {profile.dailyCalorieTarget} kcal
           </span>
         </div>
 
         <div className="grid grid-cols-3 gap-2.5 text-center font-mono">
           <div className="p-3 rounded-2xl bg-red-50/70 border border-red-100">
             <span className="text-[10px] text-zinc-500 block font-sans font-bold">PROTEIN</span>
-            <strong className="text-base text-red-600 font-black">145g</strong>
+            <strong className="text-base text-red-600 font-black">{profile.dailyProteinTarget}g</strong>
             <span className="text-[9px] text-zinc-500 block font-sans">Anti-Atrofi</span>
           </div>
           <div className="p-3 rounded-2xl bg-zinc-50 border border-zinc-200">
@@ -220,7 +227,9 @@ export const VTaperView: React.FC = () => {
         <div className="mt-4 pt-3 border-t border-zinc-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-extrabold text-zinc-900">Catat Protein Cepat Hari Ini:</span>
-            <span className="text-xs font-mono font-bold text-red-600">{protein} / 145g</span>
+            <span className="text-xs font-mono font-bold text-red-600">
+              {protein} / {profile.dailyProteinTarget}g
+            </span>
           </div>
           <div className="grid grid-cols-3 gap-1.5 text-xs">
             <button
@@ -276,7 +285,9 @@ export const VTaperView: React.FC = () => {
       <div className="p-5 rounded-3xl bg-white border border-zinc-200 shadow-card-soft">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-extrabold text-zinc-950">Log Timbangan Mingguan</h3>
-          <span className="text-[10px] text-zinc-400 font-mono font-bold">Start: 79 kg • Goal: 66 kg</span>
+          <span className="text-[10px] text-zinc-400 font-mono font-bold">
+            Start: {profile.startWeightKg} kg • Goal: {profile.targetWeightKg} kg
+          </span>
         </div>
 
         <div className="flex gap-2">

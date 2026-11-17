@@ -10,7 +10,7 @@ interface BottomNavProps {
 
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, onSelectTab }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-red-100 px-3 py-2 flex justify-around items-center z-50 shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-red-100 px-3 pt-2 safe-bottom flex justify-around items-center z-50 shadow-lg">
       <button
         onClick={() => onSelectTab('workout')}
         className={`btn-spring flex flex-col items-center gap-1 py-1 px-3 rounded-2xl font-bold transition ${

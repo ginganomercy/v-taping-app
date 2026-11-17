@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DayIndex, Exercise, SetRecord } from './types/workout';
+import { UserProfile } from './types/profile';
 import { WORKOUT_SCHEDULE, DAY_ORDER } from './data/workoutData';
 import { dbService } from './services/db';
+import { storage } from './services/storage';
 import { sound } from './services/sound';
 import { Header } from './components/Header';
 import { DaySelector } from './components/DaySelector';
@@ -11,9 +13,14 @@ import { HipShieldView } from './components/HipShieldView';
 import { LibraryView } from './components/LibraryView';
 import { SuperModal } from './components/SuperModal';
 import { TimerModal } from './components/TimerModal';
+import { ProfileModal } from './components/ProfileModal';
 import { BottomNav, TabType } from './components/BottomNav';
 
 export const App: React.FC = () => {
+  // Synchronous Profile Hydration (Instant load without FOUC)
+  const [profile, setProfile] = useState<UserProfile>(() => storage.getProfileSync());
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
   const [currentDay, setCurrentDay] = useState<DayIndex>(() => {
     const today = new Date().getDay() as DayIndex;
     return (today >= 0 && today <= 6) ? today : 1;
@@ -32,7 +39,7 @@ export const App: React.FC = () => {
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
 
-  // Load Day Data from IndexedDB
+  // Load Day Data from IndexedDB / Local Storage
   useEffect(() => {
     dbService.getDayData(currentDay).then(setDayData);
   }, [currentDay]);
@@ -46,6 +53,11 @@ export const App: React.FC = () => {
     await dbService.saveSetField(currentDay, exerciseId, setNum, field, value);
     const updated = await dbService.getDayData(currentDay);
     setDayData(updated);
+  };
+
+  const handleSaveProfile = async (updated: UserProfile) => {
+    setProfile(updated);
+    await storage.saveProfile(updated);
   };
 
   // Swipe Gesture Handling for Workout Days
@@ -98,9 +110,11 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-white shadow-2xl border-x border-zinc-200/80 flex flex-col relative overflow-hidden pb-24">
-      {/* Top Header */}
+    <div className="max-w-md mx-auto min-h-[100dvh] bg-white shadow-2xl border-x border-zinc-200/80 flex flex-col relative overflow-hidden pb-24">
+      {/* Top Header with Profile Badge and Safe-Area Support */}
       <Header
+        profile={profile}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
         onOpenRestTimer={() => openRestTimer(60)}
         quickTimerSeconds={timerDuration}
       />
@@ -120,6 +134,8 @@ export const App: React.FC = () => {
             <WorkoutView
               session={WORKOUT_SCHEDULE[currentDay]}
               dayData={dayData}
+              baselinePullUps={profile.baselinePullUps}
+              backpackPresets={profile.backpackPresetsKg}
               onUpdateSet={handleUpdateSet}
               onOpenModal={(ex) => setSelectedExercise(ex)}
               onOpenNegativeTimer={openNegativeTimer}
@@ -128,7 +144,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'metrics' && <VTaperView />}
+        {activeTab === 'metrics' && <VTaperView profile={profile} />}
         {activeTab === 'hip' && <HipShieldView />}
         {activeTab === 'library' && (
           <LibraryView onOpenModal={(ex) => setSelectedExercise(ex)} />
@@ -137,6 +153,14 @@ export const App: React.FC = () => {
 
       {/* Bottom Sticky Thumb Navigation */}
       <BottomNav activeTab={activeTab} onSelectTab={(tab) => setActiveTab(tab)} />
+
+      {/* Profile Calibration Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        profile={profile}
+        onClose={() => setIsProfileModalOpen(false)}
+        onSave={handleSaveProfile}
+      />
 
       {/* Movement Detail Blueprint Modal */}
       <SuperModal
@@ -155,4 +179,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
 export default App;

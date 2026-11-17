@@ -7,6 +7,8 @@ import { sound } from '../services/sound';
 interface WorkoutViewProps {
   session: DaySession;
   dayData: Record<string, Record<number, SetRecord>>;
+  baselinePullUps: number;
+  backpackPresets: number[];
   onUpdateSet: (exerciseId: string, setNum: number, field: keyof SetRecord, value: unknown) => void;
   onOpenModal: (ex: Exercise) => void;
   onOpenNegativeTimer: () => void;
@@ -16,6 +18,8 @@ interface WorkoutViewProps {
 export const WorkoutView: React.FC<WorkoutViewProps> = ({
   session,
   dayData,
+  baselinePullUps,
+  backpackPresets,
   onUpdateSet,
   onOpenModal,
   onOpenNegativeTimer,
@@ -81,17 +85,30 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
 
       {/* Exercise Cards */}
       <div className="space-y-3.5">
-        {session.exercises.map((ex) => (
-          <ExerciseCard
-            key={ex.id}
-            exercise={ex}
-            setsData={dayData[ex.id] || {}}
-            onUpdateSet={(setNum, field, val) => onUpdateSet(ex.id, setNum, field, val)}
-            onOpenModal={() => onOpenModal(ex)}
-            onOpenNegativeTimer={onOpenNegativeTimer}
-            onPromptRestTimer={onPromptRestTimer}
-          />
-        ))}
+        {session.exercises.map((ex) => {
+          // Dynamic Pull-Up Reps Adjustment based on user's calibrated baseline
+          const exerciseWithCalibration: Exercise = {
+            ...ex,
+            targetReps: ex.id === 'pull-up' ? baselinePullUps : ex.targetReps,
+            repsLabel:
+              ex.id === 'pull-up'
+                ? `${baselinePullUps} Reps Bersih (Chin melewati bar)`
+                : ex.repsLabel
+          };
+
+          return (
+            <ExerciseCard
+              key={ex.id}
+              exercise={exerciseWithCalibration}
+              setsData={dayData[ex.id] || {}}
+              backpackPresets={backpackPresets}
+              onUpdateSet={(setNum, field, val) => onUpdateSet(ex.id, setNum, field, val)}
+              onOpenModal={() => onOpenModal(exerciseWithCalibration)}
+              onOpenNegativeTimer={onOpenNegativeTimer}
+              onPromptRestTimer={onPromptRestTimer}
+            />
+          );
+        })}
       </div>
 
       {/* Finish Workout Action */}
