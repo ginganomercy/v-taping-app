@@ -34,11 +34,30 @@ Aplikasi latihan fisik calisthenics rumahan dan pelacak kardio harian berstandar
 ## 🛠️ Tech Stack & Arsitektur
 
 - **Frontend Core:** React 18 + TypeScript + Vite (ESM Build System)
+- **Path Aliasing:** `@/*` memetakan langsung ke `src/*`
 - **Styling:** Tailwind CSS (Athletic Red-White High Contrast `#dc2626` / `#ffffff` / `#09090b`)
 - **Sensors & Audio:** Geolocation API (Haversine Formula + Accuracy Filtering), Web Audio API Synth, Screen WakeLock API
 - **Mobile Hybrid Engine:** Capacitor 6 (`@capacitor/core`, `@capacitor/android`)
 - **Offline Database:** IndexedDB via `idb` v8.0.0
 - **CI/CD:** GitHub Actions (Ubuntu + JDK 21 + Android SDK Tools)
+
+### 📂 Struktur Folder Clean Architecture
+```
+src/
+├── components/          # Presentation Layer
+│   ├── layout/          # Header, BottomNav
+│   ├── workout/         # DayCarousel, ExerciseCard
+│   ├── views/           # WorkoutView, VTaperView, HipShieldView, LibraryView
+│   └── modals/          # LiveCardioTrackerModal, SuperModal, TimerModal, ProfileModal
+├── constants/           # Domain Named Constants (Biomechanics, Cardio Zone 2, Storage)
+├── data/                # Workout Schedule & Exercise Catalog
+├── hooks/               # Application Layer (useWorkoutSession, useSwipeNavigation, useAcousticTimer)
+├── infrastructure/      # System Adapters (IndexedDB, LocalStorage, GPS, WakeLock, SoundSynth)
+├── types/               # Pure Domain Models (workout.types, profile.types, telemetry.types)
+├── App.tsx              # Clean Declarative Root (< 130 lines)
+├── main.tsx             # React DOM Mounting Entry
+└── index.css            # Tailwind + Mobile Safe-Area Insets
+```
 
 ---
 
