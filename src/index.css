@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+input, textarea {
+  user-select: text;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.swipe-area {
+  touch-action: pan-y;
+}
+
+.btn-spring {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.btn-spring:active {
+  transform: scale(0.93) translateY(2px);
+}
+
+@keyframes slideFromRight {
+  0% { opacity: 0; transform: translateX(35px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideFromLeft {
+  0% { opacity: 0; transform: translateX(-35px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-right {
+  animation: slideFromRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.animate-slide-left {
+  animation: slideFromLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

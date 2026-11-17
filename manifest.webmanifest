@@ -1,0 +1,22 @@
+{
+  "name": "V-Taper Protocol: Home Calisthenics & Hip Shield",
+  "short_name": "V-Taper",
+  "description": "Aplikasi pendamping latihan rumah V-Taper Doritos, rehabilitasi lateral hip martials arts, dan pelacak defisit nutrisi makro.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dc2626",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "pull-up.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "pull-up.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
