@@ -3,10 +3,12 @@ import { X, Play, Pause, CheckCircle2, Flame, Gauge, Clock, Navigation } from 'l
 import { gpsTrackerService } from '@/infrastructure/sensors/gpsTracker.service';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 import { GpsTelemetry, GpsTrackingResult } from '@/types/telemetry.types';
+import { CardioPhase, CARDIO_PHASES } from '@/constants/cardio.constants';
 
 interface LiveCardioTrackerModalProps {
   isOpen: boolean;
   userWeightKg: number;
+  phase?: CardioPhase;
   onClose: () => void;
   onFinish: (result: GpsTrackingResult) => void;
 }
@@ -14,9 +16,12 @@ interface LiveCardioTrackerModalProps {
 export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
   isOpen,
   userWeightKg,
+  phase = 1,
   onClose,
   onFinish
 }) => {
+  const phaseConfig = CARDIO_PHASES[phase];
+
   const [telemetry, setTelemetry] = useState<GpsTelemetry>({
     distanceKm: 0,
     currentSpeedKmh: 0,
@@ -59,65 +64,85 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
     onFinish(result);
   };
 
+  // Phase-adaptive speed zone status
   const getSpeedZoneBadge = () => {
     if (telemetry.currentSpeedKmh < 0.8) {
       return (
-        <span className="px-3 py-1 rounded-full bg-zinc-100 text-zinc-600 font-bold text-xs">
-          Diam / Bersiap
+        <span className="px-3.5 py-1 rounded-full bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-700">
+          Diam / Bersiap Melangkah
         </span>
       );
     }
-    if (telemetry.isZoneOptimal) {
+
+    const isOptimal =
+      telemetry.currentSpeedKmh >= phaseConfig.minSpeedKmh &&
+      telemetry.currentSpeedKmh <= phaseConfig.maxSpeedKmh;
+
+    if (isOptimal) {
       return (
-        <span className="px-3 py-1 rounded-full bg-emerald-500 text-white font-black text-xs shadow-md shadow-emerald-500/30 flex items-center gap-1.5 animate-pulse">
-          <span className="w-2 h-2 rounded-full bg-white"></span>
-          ZONA 2 OPTIMAL (5.0 - 6.2 km/j)
+        <span className="px-4 py-1.5 rounded-full bg-emerald-500 text-white font-black text-xs shadow-lg shadow-emerald-500/40 flex items-center gap-2 animate-pulse">
+          <span className="w-2.5 h-2.5 rounded-full bg-white"></span>
+          {phaseConfig.optimalBadgeText}
         </span>
       );
     }
-    if (telemetry.speedStatus === 'slow') {
+
+    if (telemetry.currentSpeedKmh < phaseConfig.minSpeedKmh) {
       return (
-        <span className="px-3 py-1 rounded-full bg-amber-500 text-white font-bold text-xs">
-          Percepat Langkah (&lt; 5.0 km/j)
+        <span className="px-3.5 py-1 rounded-full bg-amber-500 text-white font-bold text-xs shadow-md shadow-amber-500/20">
+          Percepat Langkah (&lt; {phaseConfig.minSpeedKmh} km/j)
         </span>
       );
     }
+
     return (
-      <span className="px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs">
-        Terlalu Cepat! Jaga Sendi Pinggul (&gt; 6.8 km/j)
+      <span className="px-3.5 py-1 rounded-full bg-rose-600 text-white font-bold text-xs shadow-md shadow-rose-600/30">
+        Kurangi Kecepatan (&gt; {phaseConfig.maxSpeedKmh} km/j)
       </span>
     );
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 text-white safe-top safe-bottom">
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 text-white safe-top safe-bottom">
       {/* Top Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-red-600/30 border border-red-500 flex items-center justify-center text-red-500">
-            <Navigation className="w-4 h-4" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-2xl bg-red-600/30 border border-red-500 flex items-center justify-center text-red-500">
+            <Navigation className="w-4 h-4 fill-current" />
           </div>
           <div>
-            <h3 className="text-sm font-black tracking-tight text-white">LIVE GPS CARDIO HUD</h3>
-            <p className="text-[10px] text-zinc-400 font-mono">Sensor Oppo GPS Active &bull; Presisi &plusmn;{telemetry.accuracyMeters}m</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-black tracking-tight text-white">LIVE GPS SPEEDOMETER</h3>
+              <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-md bg-red-600 text-white shadow-sm">
+                FASE {phase}
+              </span>
+            </div>
+            <p className="text-[10px] text-zinc-400 font-mono">
+              {phaseConfig.name} &bull; Akurasi &plusmn;{telemetry.accuracyMeters}m
+            </p>
           </div>
         </div>
 
         <button
           onClick={onClose}
-          className="w-9 h-9 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white"
+          className="w-9 h-9 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
       {/* Main HUD Body */}
-      <div className="space-y-6 my-auto text-center py-4">
+      <div className="space-y-4 my-auto text-center py-2">
+        {/* Phase Specific Tactical Advice */}
+        <div className="max-w-xs mx-auto p-2.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 text-[11px] text-zinc-300 font-medium">
+          💡 {phaseConfig.instructions}
+        </div>
+
         {/* Speed Zone Status */}
         <div className="flex justify-center">{getSpeedZoneBadge()}</div>
 
         {/* Big Speedometer Display */}
-        <div className="py-2">
+        <div className="py-1">
           <div className="text-8xl font-mono font-black tracking-tighter text-white">
             {telemetry.currentSpeedKmh.toFixed(1)}
           </div>
@@ -137,7 +162,7 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
               {telemetry.distanceKm.toFixed(2)}
               <span className="text-sm text-zinc-500 ml-1">km</span>
             </div>
-            <p className="text-[9px] text-zinc-500 mt-0.5">Bip tiap 1.0 km tercapai</p>
+            <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">Target: {phaseConfig.targetDistanceKm} km</p>
           </div>
 
           {/* Pace */}
@@ -149,18 +174,18 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
               {telemetry.paceMinKm}
               <span className="text-sm text-zinc-500 ml-1">/km</span>
             </div>
-            <p className="text-[9px] text-zinc-500 mt-0.5">Target: 10'00" - 12'00"</p>
+            <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">Target: {phaseConfig.targetPaceStr}</p>
           </div>
 
           {/* Stopwatch Durasi */}
           <div className="p-4 rounded-3xl bg-zinc-900/90 border border-zinc-800 text-left">
             <span className="text-[10px] font-mono font-bold text-zinc-400 flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-cyan-400" /> DURASI JALAN
+              <Clock className="w-3.5 h-3.5 text-cyan-400" /> DURASI
             </span>
             <div className="text-3xl font-mono font-black text-white mt-1">
               {formatSeconds(telemetry.durationSeconds)}
             </div>
-            <p className="text-[9px] text-zinc-500 mt-0.5">Target: 40–45 Menit</p>
+            <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">Target: {phaseConfig.repsMinutes} Menit</p>
           </div>
 
           {/* Estimasi Kalori */}
@@ -172,7 +197,7 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
               {telemetry.caloriesKcal}
               <span className="text-sm text-zinc-500 ml-1">kcal</span>
             </div>
-            <p className="text-[9px] text-zinc-500 mt-0.5">MET 4.3 (Bobot 79 kg)</p>
+            <p className="text-[9px] text-zinc-500 mt-0.5">Bip tiap 1.0 KM</p>
           </div>
         </div>
       </div>

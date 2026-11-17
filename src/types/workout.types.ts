@@ -37,6 +37,7 @@ export interface SetRecord {
   reps: number | string;
   distanceKm?: number | string;
   durationMin?: number | string;
+  phase?: number;
   done: boolean;
 }
 

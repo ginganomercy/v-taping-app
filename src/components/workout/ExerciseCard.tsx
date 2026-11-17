@@ -1,7 +1,8 @@
 import React from 'react';
-import { ZoomIn, Timer, Activity, Navigation } from 'lucide-react';
+import { ZoomIn, Timer, Activity, Navigation, CheckCircle2 } from 'lucide-react';
 import { Exercise, SetRecord } from '@/types/workout.types';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
+import { CardioPhase, CARDIO_PHASES } from '@/constants/cardio.constants';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -11,7 +12,7 @@ interface ExerciseCardProps {
   onOpenModal: () => void;
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
-  onOpenGpsTracker?: () => void;
+  onOpenGpsTracker?: (phase?: CardioPhase) => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -24,6 +25,22 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onPromptRestTimer,
   onOpenGpsTracker
 }) => {
+  const isBackpackExercise = exercise.equip.toLowerCase().includes('tas');
+  const isCardioExercise = exercise.isCardio || exercise.pattern.toLowerCase().includes('aerobic');
+
+  // Dynamic Cardio Phase Selection
+  const selectedPhase = ((setsData[1]?.phase as CardioPhase) || 1) as CardioPhase;
+  const phaseConfig = CARDIO_PHASES[selectedPhase];
+
+  const handleSelectPhase = (phase: CardioPhase) => {
+    const config = CARDIO_PHASES[phase];
+    onUpdateSet(1, 'phase', phase);
+    onUpdateSet(1, 'reps', config.repsMinutes);
+    onUpdateSet(1, 'distanceKm', config.targetDistanceKm);
+    onUpdateSet(1, 'kg', config.targetDistanceKm);
+    soundSynthService.playBeep(phase === 1 ? 520 : phase === 2 ? 650 : 780, 'sine', 0.1);
+  };
+
   const handleToggleDone = (setNum: number, currentDone: boolean) => {
     soundSynthService.playBeep(650, 'sine', 0.1);
     const nextState = !currentDone;
@@ -33,9 +50,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       setTimeout(() => onPromptRestTimer(), 250);
     }
   };
-
-  const isBackpackExercise = exercise.equip.toLowerCase().includes('tas');
-  const isCardioExercise = exercise.isCardio || exercise.pattern.toLowerCase().includes('aerobic');
 
   return (
     <div className="p-4 rounded-3xl bg-white border border-zinc-200/90 shadow-card-soft space-y-3">
@@ -106,63 +120,80 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
       )}
 
-      {/* Hybrid Cardio Mode Presets & Live GPS Button */}
+      {/* Hybrid Cardio Mode Presets & Dynamic Phase Experience */}
       {isCardioExercise && (
-        <div className="space-y-2.5 pt-1">
-          {/* Live GPS Launcher Button */}
+        <div className="space-y-3 pt-1">
+          {/* Live GPS Launcher Button with Active Phase Label */}
           {onOpenGpsTracker && (
             <button
               type="button"
-              onClick={onOpenGpsTracker}
-              className="btn-spring w-full py-3 px-3 rounded-2xl bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-xs shadow-md shadow-red-600/30 flex items-center justify-center gap-2"
+              onClick={() => onOpenGpsTracker(selectedPhase)}
+              className="btn-spring w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
             >
-              <Navigation className="w-4 h-4" />
-              <span>MULAI LACAK GPS LIVE (SPEED & JARAK)</span>
+              <Navigation className="w-4 h-4 fill-white" />
+              <span>MULAI LACAK GPS LIVE ({phaseConfig.badge.toUpperCase()})</span>
             </button>
           )}
 
-          <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-zinc-400">
-            <Activity className="w-3.5 h-3.5 text-red-600" />
-            <span>PILIH FASE HYBRID RUNNER:</span>
+          <div className="flex items-center justify-between text-[9px] font-mono font-bold text-zinc-400">
+            <span className="flex items-center gap-1.5">
+              <Activity className="w-3.5 h-3.5 text-red-600" />
+              <span>PILIH FASE HYBRID RUNNER:</span>
+            </span>
+            <span className="text-red-600 font-extrabold font-mono">
+              FASE {selectedPhase} AKTIF
+            </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono font-bold">
-            <button
-              type="button"
-              onClick={() => {
-                onUpdateSet(1, 'reps', 45);
-                onUpdateSet(1, 'kg', 0);
-                soundSynthService.playBeep(580, 'sine', 0.08);
-              }}
-              className="btn-spring p-1.5 rounded-xl bg-red-50 text-red-700 border border-red-200 text-center hover:bg-red-100"
-            >
-              <span className="block text-[8px] opacity-75">FASE 1</span>
-              <span>45m Jalan</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onUpdateSet(1, 'reps', 30);
-                onUpdateSet(1, 'kg', 3.5);
-                soundSynthService.playBeep(580, 'sine', 0.08);
-              }}
-              className="btn-spring p-1.5 rounded-xl bg-zinc-50 text-zinc-700 border border-zinc-200 text-center hover:bg-red-50 hover:text-red-700"
-            >
-              <span className="block text-[8px] opacity-75">FASE 2</span>
-              <span>Walk / Jog</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onUpdateSet(1, 'reps', 28);
-                onUpdateSet(1, 'kg', 5.0);
-                soundSynthService.playBeep(580, 'sine', 0.08);
-              }}
-              className="btn-spring p-1.5 rounded-xl bg-zinc-50 text-zinc-700 border border-zinc-200 text-center hover:bg-red-50 hover:text-red-700"
-            >
-              <span className="block text-[8px] opacity-75">FASE 3</span>
-              <span>5K Run</span>
-            </button>
+          {/* 3 Reactive Phase Buttons with Active Highlight */}
+          <div className="grid grid-cols-3 gap-2 text-[10px] font-mono">
+            {([1, 2, 3] as CardioPhase[]).map((p) => {
+              const cfg = CARDIO_PHASES[p];
+              const isActive = selectedPhase === p;
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => handleSelectPhase(p)}
+                  className={`btn-spring p-2 rounded-2xl text-center border transition-all ${
+                    isActive
+                      ? 'bg-red-600 text-white border-red-700 shadow-md shadow-red-600/35 ring-2 ring-red-500/20 scale-[1.02] font-black'
+                      : 'bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-red-300 hover:bg-red-50/40 font-bold'
+                  }`}
+                >
+                  <span
+                    className={`block text-[8px] uppercase tracking-wider ${
+                      isActive ? 'text-red-100 font-black' : 'text-zinc-400 font-bold'
+                    }`}
+                  >
+                    FASE {p}
+                  </span>
+                  <span className="block mt-0.5 text-[11px] leading-tight font-extrabold">
+                    {cfg.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Dynamic Intelligence Card for Active Phase */}
+          <div className="p-3 rounded-2xl bg-gradient-to-br from-red-50/90 to-rose-50/50 border border-red-200 text-zinc-900 space-y-1.5 shadow-sm">
+            <div className="flex items-center justify-between text-[11px] font-extrabold">
+              <span className="text-red-700 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-red-600" />
+                {phaseConfig.name}
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-red-600 text-white font-mono text-[9px] font-black">
+                {phaseConfig.repsMinutes}m • {phaseConfig.targetDistanceKm}km
+              </span>
+            </div>
+            <p className="text-[11px] text-zinc-700 font-medium leading-relaxed">
+              {phaseConfig.desc}
+            </p>
+            <div className="pt-1 border-t border-red-100 flex items-center justify-between text-[10px] font-mono">
+              <span className="text-zinc-500">Target Pace:</span>
+              <strong className="text-red-700 font-black">{phaseConfig.targetPaceStr}</strong>
+            </div>
           </div>
         </div>
       )}

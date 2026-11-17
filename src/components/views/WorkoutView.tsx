@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dumbbell, Trophy, Medal } from 'lucide-react';
 import { DaySession, Exercise, SetRecord } from '@/types/workout.types';
+import { CardioPhase } from '@/constants/cardio.constants';
 import { ExerciseCard } from '@/components/workout/ExerciseCard';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 
@@ -13,7 +14,7 @@ interface WorkoutViewProps {
   onOpenModal: (ex: Exercise) => void;
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
-  onOpenGpsTracker?: () => void;
+  onOpenGpsTracker?: (phase?: CardioPhase) => void;
 }
 
 export const WorkoutView: React.FC<WorkoutViewProps> = ({

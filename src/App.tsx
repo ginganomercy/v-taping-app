@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserProfile } from '@/types/profile.types';
 import { Exercise } from '@/types/workout.types';
 import { GpsTrackingResult } from '@/types/telemetry.types';
+import { CardioPhase } from '@/constants/cardio.constants';
 import { WORKOUT_SCHEDULE } from '@/data/workoutData';
 import { localStorageService } from '@/infrastructure/storage/localStorage.service';
 import { useWorkoutSession } from '@/hooks/useWorkoutSession';
@@ -19,6 +20,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('workout');
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isGpsModalOpen, setIsGpsModalOpen] = useState(false);
+  const [activeCardioPhase, setActiveCardioPhase] = useState<CardioPhase>(1);
 
   // Application Hooks Layer
   const { currentDay, setCurrentDay, dayData, handleUpdateSet } = useWorkoutSession();
@@ -76,7 +78,10 @@ export const App: React.FC = () => {
               onOpenModal={setSelectedExercise}
               onOpenNegativeTimer={openNegativeTimer}
               onPromptRestTimer={() => openRestTimer(60)}
-              onOpenGpsTracker={() => setIsGpsModalOpen(true)}
+              onOpenGpsTracker={(phase = 1) => {
+                setActiveCardioPhase(phase);
+                setIsGpsModalOpen(true);
+              }}
             />
           </div>
         )}
@@ -112,6 +117,7 @@ export const App: React.FC = () => {
 
       <LiveCardioTrackerModal
         isOpen={isGpsModalOpen}
+        phase={activeCardioPhase}
         userWeightKg={profile.currentWeightKg}
         onClose={() => setIsGpsModalOpen(false)}
         onFinish={handleCardioFinish}
