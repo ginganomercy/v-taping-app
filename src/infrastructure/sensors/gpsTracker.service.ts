@@ -28,6 +28,7 @@ class GpsTrackerService {
   private currentSpeedKmh: number = 0;
   private lastMilestoneKm: number = 0;
   private speedSamples: number[] = [];
+  private lastAccuracyMeters: number = 0;
 
   private subscriber: TelemetryCallback | null = null;
   public isTracking: boolean = false;
@@ -66,7 +67,7 @@ class GpsTrackerService {
     // Start Stopwatch Timer (1 second interval)
     this.timerInterval = window.setInterval(() => {
       this.elapsedSeconds++;
-      this.emitUpdate(userWeightKg, 10);
+      this.emitUpdate(userWeightKg, this.lastAccuracyMeters);
     }, 1000);
 
     // Start GPS Watcher with high accuracy
@@ -109,11 +110,17 @@ class GpsTrackerService {
         this.lastLat = latitude;
         this.lastLng = longitude;
         this.lastTimestamp = now;
+        this.lastAccuracyMeters = Math.round(accuracy);
 
-        this.emitUpdate(userWeightKg, accuracy);
+        this.emitUpdate(userWeightKg, this.lastAccuracyMeters);
       },
       (err) => {
         console.warn('[GPS] Watch position error:', err.message);
+        if (err.code === 1) {
+          alert('⚠️ Izin Akses Lokasi Ditolak!\n\nUntuk melacak kecepatan dan jarak, silakan izinkan akses lokasi (GPS) pada aplikasi V-Taper Protocol di Pengaturan HP Anda.');
+        } else if (err.code === 2) {
+          alert('⚠️ Sensor Lokasi/GPS HP Belum Aktif!\n\nMohon nyalakan tombol "Lokasi / GPS" di bilah notifikasi atas HP Anda (Oppo A5i Pro) agar kecepatan dapat diukur secara presisi.');
+        }
       },
       {
         enableHighAccuracy: true,
@@ -203,6 +210,7 @@ class GpsTrackerService {
     this.lastLng = null;
     this.lastTimestamp = null;
     this.speedSamples = [];
+    this.lastAccuracyMeters = 0;
   }
 }
 

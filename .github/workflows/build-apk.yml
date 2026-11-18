@@ -50,13 +50,35 @@ jobs:
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Add Android Platform via Capacitor
+      - name: Configure Android Native Branding & Permissions
         run: |
           npx cap add android || true
+
+          # 1. Inject GPS & WakeLock Permissions into AndroidManifest.xml
+          if ! grep -q "ACCESS_FINE_LOCATION" android/app/src/main/AndroidManifest.xml; then
+            sed -i '/<uses-permission android:name="android.permission.INTERNET" \/>/a \    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-feature android:name="android.hardware.location.gps" android:required="false" />\n    <uses-permission android:name="android.permission.WAKE_LOCK" />' android/app/src/main/AndroidManifest.xml
+          fi
+
+          # 2. Deploy Official Vector Icons & Adaptive Icon XMLs
           if [ -d "android-assets" ]; then
             mkdir -p android/app/src/main/res/drawable
-            cp -f android-assets/*.xml android/app/src/main/res/drawable/ || true
+            mkdir -p android/app/src/main/res/drawable-v24
+            mkdir -p android/app/src/main/res/mipmap-anydpi-v26
+
+            cp -f android-assets/ic_launcher_background.xml android/app/src/main/res/drawable/
+            cp -f android-assets/ic_launcher_foreground.xml android/app/src/main/res/drawable/
+            cp -f android-assets/ic_launcher_foreground.xml android/app/src/main/res/drawable-v24/
+            cp -f android-assets/logo_v_taping_vector.xml android/app/src/main/res/drawable/
+
+            cp -f android-assets/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+            cp -f android-assets/ic_launcher_round.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+
+            echo '<?xml version="1.0" encoding="utf-8"?><resources><color name="ic_launcher_background">#0A0A0A</color></resources>' > android/app/src/main/res/values/ic_launcher_background.xml
+
+            # Remove legacy default Capacitor blue foreground PNGs so Android never falls back to them
+            find android/app/src/main/res/mipmap-* -name "ic_launcher_foreground.png" -delete || true
           fi
+
           npx cap sync android
 
       - name: Build Android APK with Gradle

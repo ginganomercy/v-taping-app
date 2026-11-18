@@ -117,8 +117,14 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
                 FASE {phase}
               </span>
             </div>
-            <p className="text-[10px] text-zinc-400 font-mono">
-              {phaseConfig.name} &bull; Akurasi &plusmn;{telemetry.accuracyMeters}m
+            <p className="text-[10px] text-zinc-400 font-mono flex items-center gap-1.5 flex-wrap">
+              <span>{phaseConfig.name}</span>
+              <span>&bull;</span>
+              {telemetry.accuracyMeters > 0 && telemetry.accuracyMeters <= 30 ? (
+                <span className="text-emerald-400 font-bold">Akurasi GPS &plusmn;{telemetry.accuracyMeters}m</span>
+              ) : (
+                <span className="text-amber-400 animate-pulse font-bold">Mencari Sinyal GPS...</span>
+              )}
             </p>
           </div>
         </div>
@@ -162,7 +168,13 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
               {telemetry.distanceKm.toFixed(2)}
               <span className="text-sm text-zinc-500 ml-1">km</span>
             </div>
-            <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">Target: {phaseConfig.targetDistanceKm} km</p>
+            <p className="text-[9px] mt-0.5 font-mono">
+              {phaseConfig.primaryTarget === 'duration' ? (
+                <span className="text-zinc-400">{phaseConfig.secondaryTargetLabel}</span>
+              ) : (
+                <span className="text-emerald-400 font-bold">{phaseConfig.primaryTargetLabel}</span>
+              )}
+            </p>
           </div>
 
           {/* Pace */}
@@ -185,7 +197,13 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
             <div className="text-3xl font-mono font-black text-white mt-1">
               {formatSeconds(telemetry.durationSeconds)}
             </div>
-            <p className="text-[9px] text-zinc-400 mt-0.5 font-mono">Target: {phaseConfig.repsMinutes} Menit</p>
+            <p className="text-[9px] mt-0.5 font-mono">
+              {phaseConfig.primaryTarget === 'duration' ? (
+                <span className="text-emerald-400 font-bold">{phaseConfig.primaryTargetLabel}</span>
+              ) : (
+                <span className="text-zinc-400">{phaseConfig.secondaryTargetLabel}</span>
+              )}
+            </p>
           </div>
 
           {/* Estimasi Kalori */}

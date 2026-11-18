@@ -17,6 +17,9 @@ export interface CardioPhaseConfig {
   desc: string;
   instructions: string;
   optimalBadgeText: string;
+  primaryTarget: 'duration' | 'distance';
+  primaryTargetLabel: string;
+  secondaryTargetLabel: string;
 }
 
 /** Phase 1: Zone 2 Brisk Walking (Current 79 kg baseline) */
@@ -49,7 +52,10 @@ export const CARDIO_PHASES: Record<CardioPhase, CardioPhaseConfig> = {
     targetPaceStr: "10'00\" - 12'00\"/km",
     desc: 'Langkah cepat berirama, 0% benturan pinggul, fokus oksidasi asam lemak.',
     instructions: 'Pertahankan 5.0 - 6.2 km/j. Sangat protektif untuk tendon pinggul dan otot sayap.',
-    optimalBadgeText: 'ZONA 2 OPTIMAL (5.0 - 6.2 km/j)'
+    optimalBadgeText: 'ZONA 2 OPTIMAL (5.0 - 6.2 km/j)',
+    primaryTarget: 'duration',
+    primaryTargetLabel: '🎯 Target Utama: 45 Menit',
+    secondaryTargetLabel: 'Est. Jarak: ~4.0 km'
   },
   2: {
     phase: 2,
@@ -62,7 +68,10 @@ export const CARDIO_PHASES: Record<CardioPhase, CardioPhaseConfig> = {
     targetPaceStr: "7'30\" - 10'00\"/km",
     desc: 'Interval rasio 2 menit jalan cepat : 1 menit jogging santai.',
     instructions: 'Selang-seling jalan dan jog santai. Jika pinggul luar terasa pegal, kembali ke jalan cepat.',
-    optimalBadgeText: 'INTERVAL ZONE (5.5 - 8.0 km/j)'
+    optimalBadgeText: 'INTERVAL ZONE (5.5 - 8.0 km/j)',
+    primaryTarget: 'duration',
+    primaryTargetLabel: '🎯 Target Utama: 30 Menit',
+    secondaryTargetLabel: 'Est. Jarak: ~3.5 km'
   },
   3: {
     phase: 3,
@@ -75,7 +84,10 @@ export const CARDIO_PHASES: Record<CardioPhase, CardioPhaseConfig> = {
     targetPaceStr: "5'30\" - 7'00\"/km",
     desc: 'Lari stabil 5 Kilometer setelah bobot mendekati < 70 kg.',
     instructions: 'Lari kontinu ritmis tanpa henti. Hanya dieksekusi saat pinggul sudah 100% bebas nyeri.',
-    optimalBadgeText: 'RUN PACE TARGET (8.0 - 11.0 km/j)'
+    optimalBadgeText: 'RUN PACE TARGET (8.0 - 11.0 km/j)',
+    primaryTarget: 'distance',
+    primaryTargetLabel: '🎯 Target Utama: 5.00 km',
+    secondaryTargetLabel: 'Est. Durasi: ~28 Menit'
   }
 };
 
