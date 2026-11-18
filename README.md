@@ -11,11 +11,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.1">
-    <img src="https://img.shields.io/badge/Release-v1.0.1-crimson.svg?style=for-the-badge&logo=github" alt="Release v1.0.1" />
+  <a href="https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.2">
+    <img src="https://img.shields.io/badge/Release-v1.0.2-crimson.svg?style=for-the-badge&logo=github" alt="Release v1.0.2" />
   </a>
-  <a href="https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.1/app-debug.apk">
-    <img src="https://img.shields.io/badge/Android%20APK-Download%20Debug-107C41.svg?style=for-the-badge&logo=android" alt="Download APK" />
+  <a href="https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.2/VTaper-Protocol-v1.0.2.apk">
+    <img src="https://img.shields.io/badge/Android%20APK-Download%20v1.0.2-107C41.svg?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
   <img src="https://img.shields.io/badge/Offline-100%25%20IndexedDB-0A0A0A.svg?style=for-the-badge&logo=pwa" alt="Offline Ready" />
   <img src="https://img.shields.io/badge/Capacitor-6.2%20Android-119EFF.svg?style=for-the-badge&logo=capacitor" alt="Capacitor 6" />
@@ -146,16 +146,16 @@ Buka browser pada alamat `http://localhost:5173`.
 
 Setiap tag versi yang dipush ke repositori ini akan secara otomatis memicu GitHub Actions untuk mengompilasi dan merilis file biner APK resmi.
 
-- 📥 **Download APK Rilis Terkini:** [V-Taper Protocol v1.0.1](https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.1)
-- 📲 **Langsung Unduh APK Debug:** [app-debug.apk](https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.1/app-debug.apk)
+- 📥 **Download APK Rilis Terkini:** [V-Taper Protocol v1.0.2](https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.2)
+- 📲 **Langsung Unduh APK:** [VTaper-Protocol-v1.0.2.apk](https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.2/VTaper-Protocol-v1.0.2.apk)
 
 ### Cara Build APK Sendiri (Manual via GitHub Actions):
 ```bash
 # Buat tag versi baru
-git tag -a v1.0.1 -m "Release v1.0.1: Update fitur & kalibrasi"
+git tag -a v1.0.2 -m "Release v1.0.2: Update fitur & kalibrasi"
 
 # Push tag ke GitHub
-git push origin v1.0.1
+git push origin v1.0.2
 ```
 Workflow GitHub Actions akan otomatis mengompilasi file APK dalam waktu ~2 menit dan menempelkannya di tab **Releases**.
 

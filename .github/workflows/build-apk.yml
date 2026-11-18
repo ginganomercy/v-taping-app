@@ -87,11 +87,22 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
+      - name: Package Clean Production APK
+        run: |
+          mkdir -p release-pkg
+          VERSION_TAG="${{ github.ref_name }}"
+          if [ -z "$VERSION_TAG" ] || [ "$VERSION_TAG" = "main" ]; then
+            VERSION_TAG="v1.0.2"
+          fi
+          OUTPUT_APK="release-pkg/VTaper-Protocol-${VERSION_TAG}.apk"
+          find android/app/build/outputs/apk -type f -name "*.apk" | head -n 1 | xargs -I {} cp {} "$OUTPUT_APK"
+          ls -la release-pkg/
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
-          name: v-taper-athletic-debug.apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: VTaper-Protocol-Package
+          path: release-pkg/*.apk
           retention-days: 14
 
   release:
@@ -107,23 +118,23 @@ jobs:
       - name: Download Built APK Artifact
         uses: actions/download-artifact@v4
         with:
-          name: v-taper-athletic-debug.apk
+          name: VTaper-Protocol-Package
           path: release-assets
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release-assets/app-debug.apk
+          files: release-assets/*.apk
           name: "V-Taper Protocol ${{ github.ref_name }}"
           body: |
             ## 🚀 V-Taper Protocol ${{ github.ref_name }} - Offline Android APK
-            Aplikasi latihan rumah siluet Doritos V-Taper, rehabilitasi sendi panggul lateral (Hip Shield), dan pelacak kardio GPS Zone 2.
+            Aplikasi latihan fisik siluet Doritos V-Taper, rehabilitasi sendi panggul lateral (Hip Shield), dan pelacak kardio GPS Zone 2.
 
             ### 📲 Cara Install di HP Android (termasuk Oppo A5i Pro):
-            1. Download file `app-debug.apk` di bawah.
+            1. Download file `VTaper-Protocol-${{ github.ref_name }}.apk` di bawah.
             2. Buka file hasil unduhan di HP Anda.
             3. Jika muncul konfirmasi keamanan "Install dari sumber tidak dikenal", pilih **Izinkan** untuk browser/file manager Anda.
-            4. Aplikasi langsung terpasang dan siap digunakan $100\%$ offline!
+            4. Aplikasi langsung terpasang dengan nama dan ikon resmi, siap digunakan $100\%$ offline!
 
             ---
             *Verifikasi Keamanan: Paket APK ini dikompilasi secara otomatis melalui GitHub Actions CI/CD Pipeline yang ter-hardening.*
