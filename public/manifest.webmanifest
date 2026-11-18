@@ -9,13 +9,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/app-icon.svg",
+      "src": "./app-icon.svg",
       "sizes": "512x512 192x192 128x128 64x64",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/favicon.svg",
+      "src": "./favicon.svg",
       "sizes": "48x48 32x32 16x16",
       "type": "image/svg+xml",
       "purpose": "any"

@@ -170,7 +170,7 @@ export const WORKOUT_SCHEDULE: Record<DayIndex, DaySession> = {
         targetReps: 30,
         defaultKg: 0,
         repsLabel: "3 Set x 20–30 Detik Gantung Pasif",
-        image: "/pull-up.png",
+        image: "./pull-up.png",
         tip: "Gantung rileks pada bar pull-up tanpa menarik. Biarkan berat tubuh mendekompresi ruas tulang punggung dan membuka rongga bahu."
       },
       {
@@ -184,7 +184,7 @@ export const WORKOUT_SCHEDULE: Record<DayIndex, DaySession> = {
         targetReps: 5,
         defaultKg: 0,
         repsLabel: "5 Menit Peregangan Pasif + 3L Air",
-        image: "/side-lying-hip-abduction.png",
+        image: "./side-lying-hip-abduction.png",
         tip: "Lakukan peregangan panggul tanpa memaksakan rentang gerak. Cukupi kebutuhan air 3 Liter hari ini untuk mempercepat regenerasi cairan sendi."
       }
     ]
@@ -330,7 +330,7 @@ export const WORKOUT_SCHEDULE: Record<DayIndex, DaySession> = {
         defaultKg: 0,
         isCardio: true,
         repsLabel: "Sesi Kardio Terpilih (Fase 1 / 2 / 3)",
-        image: "/controlled-bodyweight-squat.png",
+        image: "./controlled-bodyweight-squat.png",
         tip: "Pilih fase latihan Anda: [Fase 1] Jalan cepat 45 menit (5.0-6.2 km/j), [Fase 2] Walk/Jog interval (5.5-8.0 km/j), [Fase 3] 5K Run kontinu. Tekan tombol 'MULAI LACAK GPS LIVE' untuk membuka speedometer digital!"
       }
     ]

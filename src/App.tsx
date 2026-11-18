@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
-import { UserProfile } from '@/types/profile.types';
-import { Exercise } from '@/types/workout.types';
-import { GpsTrackingResult } from '@/types/telemetry.types';
-import { CardioPhase } from '@/constants/cardio.constants';
+import { UserProfile, Exercise, GpsTrackingResult } from '@/types';
+import { CardioPhase } from '@/constants';
 import { WORKOUT_SCHEDULE } from '@/data/workoutData';
-import { localStorageService } from '@/infrastructure/storage/localStorage.service';
-import { useWorkoutSession } from '@/hooks/useWorkoutSession';
-import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
-import { useAcousticTimer } from '@/hooks/useAcousticTimer';
+import { localStorageService } from '@/infrastructure';
+import { useWorkoutSession, useSwipeNavigation, useAcousticTimer } from '@/hooks';
 import { Header, BottomNav, TabType } from '@/components/layout';
 import { DayCarousel } from '@/components/workout';
 import { WorkoutView, VTaperView, HipShieldView, LibraryView } from '@/components/views';
