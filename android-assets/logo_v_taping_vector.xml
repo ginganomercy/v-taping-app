@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Full Brand Vector Drawable for Android In-App Views, Splash Screen, & Dialogs -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="600"
+    android:viewportHeight="600">
+
+    <!-- Reticle Outer Ring -->
+    <path
+        android:pathData="M300,50 A250,250 0 1,0 300,550 A250,250 0 1,0 300,50 Z"
+        android:strokeColor="#FF8B0A1F"
+        android:strokeWidth="1.5" />
+
+    <!-- Reticle Inner Ring -->
+    <path
+        android:pathData="M300,62 A238,238 0 1,0 300,538 A238,238 0 1,0 300,62 Z"
+        android:strokeColor="#66C8102E"
+        android:strokeWidth="0.8" />
+
+    <!-- 4 Cardinal Alignment Marks -->
+    <path
+        android:pathData="M300,50 L300,32 M300,550 L300,568 M550,300 L568,300 M50,300 L32,300"
+        android:strokeColor="#FFC8102E"
+        android:strokeWidth="2.0"
+        android:strokeLineCap="round" />
+
+    <!-- Sub-tick Marks (30 deg intervals) -->
+    <!-- 30 deg -->
+    <path android:pathData="M425,83.5 L430,74.8" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 60 deg -->
+    <path android:pathData="M516.5,175 L525.2,170" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 120 deg -->
+    <path android:pathData="M516.5,425 L525.2,430" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 150 deg -->
+    <path android:pathData="M425,516.5 L430,525.2" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 210 deg -->
+    <path android:pathData="M175,516.5 L170,525.2" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 240 deg -->
+    <path android:pathData="M83.5,425 L74.8,430" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 300 deg -->
+    <path android:pathData="M83.5,175 L74.8,170" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+    <!-- 330 deg -->
+    <path android:pathData="M175,83.5 L170,74.8" android:strokeColor="#FF8B0A1F" android:strokeWidth="1.2" android:strokeLineCap="round" />
+
+    <!-- Left Athletic Tape Band (Gradient) -->
+    <path
+        android:pathData="M186,160 L222,160 L300,296.5 L300,440 L162.8,199.9 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="186"
+                android:startY="160"
+                android:endX="300"
+                android:endY="440">
+                <item android:color="#FFD91B3A" android:offset="0.0" />
+                <item android:color="#FFC8102E" android:offset="0.55" />
+                <item android:color="#FF8B0A1F" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Right Athletic Tape Band (Gradient) -->
+    <path
+        android:pathData="M414,160 L378,160 L300,296.5 L300,440 L437.2,199.9 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="414"
+                android:startY="160"
+                android:endX="300"
+                android:endY="440">
+                <item android:color="#FFC8102E" android:offset="0.0" />
+                <item android:color="#FFA50D26" android:offset="0.6" />
+                <item android:color="#FF6E0818" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 3D Bevel Folds -->
+    <path
+        android:pathData="M186,160 L162.8,199.9 L208.8,199.9 Z M414,160 L437.2,199.9 L391.2,199.9 Z"
+        android:fillColor="#FF8B0A1F" />
+
+    <!-- Specular Edges -->
+    <path
+        android:pathData="M186,160 L162.8,199.9 M414,160 L437.2,199.9 M162.8,199.9 L300,440 M437.2,199.9 L300,440 M300,296.5 L300,440"
+        android:strokeColor="#CCE8E8E8"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round" />
+
+    <!-- Stitches & Seams -->
+    <path
+        android:pathData="M212.4,215 L300,368.3 M387.6,215 L300,368.3"
+        android:strokeColor="#8C0A0A0A"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round" />
+</vector>

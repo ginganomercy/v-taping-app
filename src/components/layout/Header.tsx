@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Flame, Timer, Volume2, VolumeX, User } from 'lucide-react';
+import { Timer, Volume2, VolumeX, User } from 'lucide-react';
+import { BrandLogo } from '@/components/layout/BrandLogo';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 import { UserProfile } from '@/types/profile.types';
 
@@ -37,12 +38,15 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-red-100 px-4 py-3 safe-top flex items-center justify-between shadow-sm">
       <div className="flex items-center gap-2.5">
-        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center shadow-md shadow-red-500/25 btn-spring">
-          <Flame className="w-5 h-5 text-white stroke-[2.5]" />
+        <div className="btn-spring">
+          <BrandLogo variant="icon" size={40} className="shadow-md shadow-zinc-950/20 rounded-2xl" />
         </div>
         <div>
-          <h1 className="text-sm font-black tracking-tight text-zinc-950 flex items-center gap-1.5">
-            V-TAPER <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-600 text-white font-mono font-bold tracking-widest shadow-sm">PRO</span>
+          <h1 className="text-sm font-black tracking-tight text-zinc-950 flex items-center gap-1.5 font-['Montserrat',sans-serif]">
+            <span className="text-red-600 font-extrabold">V</span>
+            <span className="text-zinc-400 font-light">-</span>
+            <span>TAPING</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-600 text-white font-mono font-bold tracking-widest shadow-sm">PRO</span>
           </h1>
           <p className="text-[11px] font-semibold text-zinc-500">{currentDate}</p>
         </div>
