@@ -9,20 +9,27 @@ on:
       - master
   workflow_dispatch:
 
+# Default to least privilege across the entire workflow
 permissions:
-  contents: write
+  contents: read
+
+# Concurrency control: prevent duplicate queued runs and cancel obsolete executions
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     name: Build Android APK
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
           node-version: 20
           cache: 'npm'
@@ -30,11 +37,11 @@ jobs:
       - name: Install NPM Dependencies
         run: npm ci
 
-      - name: Build Web Application
+      - name: Typecheck & Compile Web Application
         run: npm run build
 
       - name: Setup Java JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
         with:
           distribution: 'zulu'
           java-version: 17
@@ -56,28 +63,47 @@ jobs:
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: v-taper-athletic-debug.apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
 
-      - name: Create GitHub Release (On Tag Push)
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+  release:
+    name: Publish Official GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # Isolated write permission exclusively for release asset attachment
+
+    steps:
+      - name: Download Built APK Artifact
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+          name: v-taper-athletic-debug.apk
+          path: release-assets
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ea2670d2 # v2.2.1
+        with:
+          files: release-assets/app-debug.apk
           name: "V-Taper Protocol ${{ github.ref_name }}"
           body: |
-            ## 🚀 V-Taper Protocol - Offline Android APK
-            Aplikasi latihan rumah siluet Doritos V-Taper, rehabilitasi lateral hip martials arts, dan pelacak makro nutrisi.
-            
-            ### Cara Install di HP Android:
+            ## 🚀 V-Taper Protocol ${{ github.ref_name }} - Offline Android APK
+            Aplikasi latihan rumah siluet Doritos V-Taper, rehabilitasi sendi panggul lateral (Hip Shield), dan pelacak kardio GPS Zone 2.
+
+            ### 📲 Cara Install di HP Android (termasuk Oppo A5i Pro):
             1. Download file `app-debug.apk` di bawah.
-            2. Buka file hasil download di HP Anda.
-            3. Jika muncul konfirmasi "Install dari sumber tidak dikenal", izinkan peramban/file manager.
+            2. Buka file hasil unduhan di HP Anda.
+            3. Jika muncul konfirmasi keamanan "Install dari sumber tidak dikenal", pilih **Izinkan** untuk browser/file manager Anda.
             4. Aplikasi langsung terpasang dan siap digunakan $100\%$ offline!
+
+            ---
+            *Verifikasi Keamanan: Paket APK ini dikompilasi secara otomatis melalui GitHub Actions CI/CD Pipeline yang ter-hardening.*
           draft: false
           prerelease: false
