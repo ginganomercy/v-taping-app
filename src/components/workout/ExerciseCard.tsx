@@ -249,7 +249,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               </span>
 
               {/* Input Beban Tas / Jarak KM */}
-              <div className="col-span-4 flex items-center bg-white border border-zinc-200 rounded-lg px-2 py-1 shadow-sm">
+              <div className="col-span-4 flex items-center bg-white border border-zinc-200 rounded-lg px-1.5 py-1 shadow-sm min-w-0">
                 <input
                   type="number"
                   step="0.01"
@@ -267,30 +267,30 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                       onUpdateSet(setNum, 'kg', e.target.value);
                     }
                   }}
-                  className="w-full text-xs font-mono font-bold text-zinc-900 focus:outline-none"
+                  className="input-compact w-full min-w-0 text-xs font-mono font-bold text-zinc-900 focus:outline-none bg-transparent"
                 />
-                <span className="text-[9px] font-mono text-zinc-400 ml-1">
+                <span className="text-[9px] font-mono text-zinc-400 ml-0.5 shrink-0">
                   {isCardioExercise ? 'km' : 'kg'}
                 </span>
               </div>
 
               {/* Input Repetisi / Menit Durasi */}
-              <div className="col-span-3 flex items-center bg-white border border-zinc-200 rounded-lg px-2 py-1 shadow-sm">
+              <div className="col-span-3 flex items-center bg-white border border-zinc-200 rounded-lg px-1.5 py-1 shadow-sm min-w-0">
                 <input
                   type="number"
                   placeholder={String(exercise.targetReps)}
                   value={item.reps !== undefined ? item.reps : ''}
                   onChange={(e) => onUpdateSet(setNum, 'reps', e.target.value)}
-                  className="w-full text-xs font-mono font-bold text-zinc-900 focus:outline-none"
+                  className="input-compact w-full min-w-0 text-xs font-mono font-bold text-zinc-900 focus:outline-none bg-transparent"
                 />
-                {isCardioExercise && <span className="text-[9px] font-mono text-zinc-400 ml-0.5">m</span>}
+                {isCardioExercise && <span className="text-[9px] font-mono text-zinc-400 ml-0.5 shrink-0">m</span>}
               </div>
 
               {/* Done Check Button */}
               <div className="col-span-3 text-right">
                 <button
                   onClick={() => handleToggleDone(setNum, item.done)}
-                  className={`btn-spring w-full py-1.5 rounded-lg font-mono font-bold text-xs flex items-center justify-center gap-1 transition ${
+                  className={`btn-spring w-full py-1.5 px-1 rounded-lg font-mono font-bold text-[11px] sm:text-xs flex items-center justify-center gap-0.5 sm:gap-1 transition truncate ${
                     item.done
                       ? 'bg-red-600 text-white shadow-sm'
                       : 'bg-white border border-zinc-300 text-zinc-600 hover:border-red-600'

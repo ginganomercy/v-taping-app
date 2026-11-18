@@ -15,10 +15,13 @@
   box-sizing: border-box;
 }
 
-/* iOS Safari auto-zoom prevention: inputs must be at least 16px on mobile */
+/* iOS Safari auto-zoom prevention: general inputs must be at least 16px, while micro set inputs stay compact */
 @media screen and (max-width: 768px) {
-  input, select, textarea {
+  input:not(.input-compact), select, textarea {
     font-size: 16px !important;
+  }
+  .input-compact {
+    font-size: 13px !important;
   }
 }
 
@@ -26,13 +29,13 @@ input, textarea {
   user-select: text;
 }
 
-/* Safe Area Inset Helpers */
+/* Safe Area Inset Helpers - Hardened for notch, dynamic island, and gesture navigation bars */
 .safe-top {
   padding-top: max(0.75rem, env(safe-area-inset-top, 0.75rem));
 }
 
 .safe-bottom {
-  padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0.6rem));
+  padding-bottom: max(0.85rem, env(safe-area-inset-bottom, 0.85rem));
 }
 
 .no-scrollbar::-webkit-scrollbar {

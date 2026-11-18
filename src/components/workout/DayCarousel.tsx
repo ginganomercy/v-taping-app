@@ -20,7 +20,7 @@ export const DayCarousel: React.FC<DayCarouselProps> = ({ currentDay, onSelectDa
         </span>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 text-xs">
         {DAY_ORDER.map((dayIdx) => {
           const session = WORKOUT_SCHEDULE[dayIdx];
           const isSelected = currentDay === dayIdx;

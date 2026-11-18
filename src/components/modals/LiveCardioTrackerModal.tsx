@@ -103,9 +103,9 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 text-white safe-top safe-bottom">
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 text-white safe-top safe-bottom overflow-y-auto no-scrollbar">
       {/* Top Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-2xl bg-red-600/30 border border-red-500 flex items-center justify-center text-red-500">
             <Navigation className="w-4 h-4 fill-current" />
@@ -138,7 +138,7 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
       </div>
 
       {/* Main HUD Body */}
-      <div className="space-y-4 my-auto text-center py-2">
+      <div className="space-y-3 sm:space-y-4 my-auto text-center py-2 shrink-0">
         {/* Phase Specific Tactical Advice */}
         <div className="max-w-xs mx-auto p-2.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 text-[11px] text-zinc-300 font-medium">
           💡 {phaseConfig.instructions}
@@ -149,7 +149,7 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
 
         {/* Big Speedometer Display */}
         <div className="py-1">
-          <div className="text-8xl font-mono font-black tracking-tighter text-white">
+          <div className="text-7xl sm:text-8xl font-mono font-black tracking-tighter text-white">
             {telemetry.currentSpeedKmh.toFixed(1)}
           </div>
           <span className="text-xs uppercase tracking-widest text-zinc-400 font-mono font-bold block mt-1">
