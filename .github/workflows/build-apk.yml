@@ -6,6 +6,7 @@ on:
       - 'v*'
     branches:
       - main
+      - master
   workflow_dispatch:
 
 permissions:
@@ -44,6 +45,10 @@ jobs:
       - name: Add Android Platform via Capacitor
         run: |
           npx cap add android || true
+          if [ -d "android-assets" ]; then
+            mkdir -p android/app/src/main/res/drawable
+            cp -f android-assets/*.xml android/app/src/main/res/drawable/ || true
+          fi
           npx cap sync android
 
       - name: Build Android APK with Gradle
