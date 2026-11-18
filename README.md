@@ -11,10 +11,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.0">
-    <img src="https://img.shields.io/badge/Release-v1.0.0-crimson.svg?style=for-the-badge&logo=github" alt="Release v1.0.0" />
+  <a href="https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.1">
+    <img src="https://img.shields.io/badge/Release-v1.0.1-crimson.svg?style=for-the-badge&logo=github" alt="Release v1.0.1" />
   </a>
-  <a href="https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.0/app-debug.apk">
+  <a href="https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.1/app-debug.apk">
     <img src="https://img.shields.io/badge/Android%20APK-Download%20Debug-107C41.svg?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
   <img src="https://img.shields.io/badge/Offline-100%25%20IndexedDB-0A0A0A.svg?style=for-the-badge&logo=pwa" alt="Offline Ready" />
@@ -146,8 +146,8 @@ Buka browser pada alamat `http://localhost:5173`.
 
 Setiap tag versi yang dipush ke repositori ini akan secara otomatis memicu GitHub Actions untuk mengompilasi dan merilis file biner APK resmi.
 
-- 📥 **Download APK Rilis Terkini:** [V-Taper Protocol v1.0.0](https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.0)
-- 📲 **Langsung Unduh APK Debug:** [app-debug.apk](https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.0/app-debug.apk)
+- 📥 **Download APK Rilis Terkini:** [V-Taper Protocol v1.0.1](https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.1)
+- 📲 **Langsung Unduh APK Debug:** [app-debug.apk](https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.1/app-debug.apk)
 
 ### Cara Build APK Sendiri (Manual via GitHub Actions):
 ```bash
