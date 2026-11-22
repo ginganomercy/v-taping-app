@@ -5,6 +5,7 @@
 
 import { openDB, IDBPDatabase } from 'idb';
 import { SetRecord, WeightEntry } from '../../types/workout.types';
+import { CardioLogEntry } from '../../types/telemetry.types';
 import { DB_NAME, DB_VERSION, DB_STORES, STORAGE_KEYS } from '../../constants/storage.constants';
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
@@ -21,6 +22,9 @@ function getDatabaseInstance(): Promise<IDBPDatabase> {
         }
         if (!db.objectStoreNames.contains(DB_STORES.WEIGHTS)) {
           db.createObjectStore(DB_STORES.WEIGHTS, { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains(DB_STORES.CARDIO_LOGS)) {
+          db.createObjectStore(DB_STORES.CARDIO_LOGS, { keyPath: 'id', autoIncrement: true });
         }
       },
     });
@@ -155,5 +159,92 @@ export const indexedDbService = {
 
   async setMetric<T>(key: string, value: T): Promise<void> {
     return this.saveMetric(key, value);
+  },
+
+  /**
+   * Persists a completed outdoor GPS cardio session to IndexedDB and LocalStorage dual-layer.
+   */
+  async saveCardioLog(entry: Omit<CardioLogEntry, 'id'>): Promise<CardioLogEntry> {
+    let savedId = Date.now();
+    try {
+      const db = await getDatabaseInstance();
+      const insertId = await db.add(DB_STORES.CARDIO_LOGS, entry);
+      if (typeof insertId === 'number') {
+        savedId = insertId;
+      }
+    } catch (e) {
+      console.warn('[IndexedDB] saveCardioLog fallback triggered:', e);
+    }
+
+    const savedEntry: CardioLogEntry = { ...entry, id: savedId };
+
+    try {
+      const local = localStorage.getItem(STORAGE_KEYS.CARDIO_HISTORY);
+      const list: CardioLogEntry[] = local ? JSON.parse(local) : [];
+      list.unshift(savedEntry);
+      localStorage.setItem(STORAGE_KEYS.CARDIO_HISTORY, JSON.stringify(list));
+    } catch (e) {
+      console.warn('[LocalStorage] saveCardioLog sync error:', e);
+    }
+
+    return savedEntry;
+  },
+
+  /**
+   * Fetches all recorded cardio sessions, sorted by newest first.
+   */
+  async getCardioLogs(): Promise<CardioLogEntry[]> {
+    try {
+      const db = await getDatabaseInstance();
+      const all = await db.getAll(DB_STORES.CARDIO_LOGS);
+      if (all && all.length > 0) {
+        return all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      }
+    } catch (e) {
+      console.warn('[IndexedDB] getCardioLogs fallback triggered:', e);
+    }
+
+    try {
+      const local = localStorage.getItem(STORAGE_KEYS.CARDIO_HISTORY);
+      return local ? JSON.parse(local) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Deletes a specific cardio session by ID from both IndexedDB and LocalStorage.
+   */
+  async deleteCardioLog(id: number): Promise<void> {
+    try {
+      const db = await getDatabaseInstance();
+      await db.delete(DB_STORES.CARDIO_LOGS, id);
+    } catch (e) {
+      console.warn('[IndexedDB] deleteCardioLog fallback triggered:', e);
+    }
+
+    try {
+      const local = localStorage.getItem(STORAGE_KEYS.CARDIO_HISTORY);
+      if (local) {
+        const list: CardioLogEntry[] = JSON.parse(local);
+        const filtered = list.filter((item) => item.id !== id);
+        localStorage.setItem(STORAGE_KEYS.CARDIO_HISTORY, JSON.stringify(filtered));
+      }
+    } catch (e) {
+      console.warn('[LocalStorage] deleteCardioLog sync error:', e);
+    }
+  },
+
+  /**
+   * Clears all cardio history entries.
+   */
+  async clearCardioLogs(): Promise<void> {
+    try {
+      const db = await getDatabaseInstance();
+      await db.clear(DB_STORES.CARDIO_LOGS);
+    } catch (e) {
+      console.warn('[IndexedDB] clearCardioLogs fallback triggered:', e);
+    }
+    localStorage.removeItem(STORAGE_KEYS.CARDIO_HISTORY);
   }
 };

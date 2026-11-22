@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Play, Pause, CheckCircle2, Flame, Gauge, Clock, Navigation } from 'lucide-react';
+import { X, Play, Pause, CheckCircle2, Flame, Gauge, Clock, Navigation, History } from 'lucide-react';
 import { gpsTrackerService } from '@/infrastructure/sensors/gpsTracker.service';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 import { GpsTelemetry, GpsTrackingResult } from '@/types/telemetry.types';
@@ -11,6 +11,7 @@ interface LiveCardioTrackerModalProps {
   phase?: CardioPhase;
   onClose: () => void;
   onFinish: (result: GpsTrackingResult) => void;
+  onOpenHistory?: () => void;
 }
 
 export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
@@ -18,7 +19,8 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
   userWeightKg,
   phase = 1,
   onClose,
-  onFinish
+  onFinish,
+  onOpenHistory
 }) => {
   const phaseConfig = CARDIO_PHASES[phase];
 
@@ -129,12 +131,24 @@ export const LiveCardioTrackerModal: React.FC<LiveCardioTrackerModalProps> = ({
           </div>
         </div>
 
-        <button
-          onClick={onClose}
-          className="w-9 h-9 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-2">
+          {onOpenHistory && (
+            <button
+              onClick={onOpenHistory}
+              title="Lihat Riwayat Lari"
+              className="px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 hover:text-white flex items-center gap-1.5 text-[11px] font-bold font-mono transition"
+            >
+              <History className="w-3.5 h-3.5 text-rose-400" />
+              <span>Riwayat</span>
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Main HUD Body */}

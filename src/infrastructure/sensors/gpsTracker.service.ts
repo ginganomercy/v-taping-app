@@ -18,6 +18,7 @@ import {
 class GpsTrackerService {
   private watchId: number | null = null;
   private timerInterval: number | null = null;
+  private userWeightKg: number = 79;
 
   private lastLat: number | null = null;
   private lastLng: number | null = null;
@@ -58,6 +59,7 @@ class GpsTrackerService {
     }
 
     this.reset();
+    this.userWeightKg = userWeightKg;
     this.subscriber = onUpdate;
     this.isTracking = true;
 
@@ -148,14 +150,23 @@ class GpsTrackerService {
     const distanceKm = Math.round((this.totalDistanceMeters / 1000) * 100) / 100;
     const durationMin = Math.round(this.elapsedSeconds / 60);
     const avgSpeed = this.elapsedSeconds > 0 ? (distanceKm / (this.elapsedSeconds / 3600)) : 0;
-    const calories = Math.round(MET_BRISK_WALKING * 79 * (this.elapsedSeconds / 3600));
+    const calories = Math.round(MET_BRISK_WALKING * this.userWeightKg * (this.elapsedSeconds / 3600));
+
+    let paceStr = "--'--\"";
+    if (avgSpeed > 0.5) {
+      const paceDecimal = 60 / avgSpeed;
+      const paceMin = Math.floor(paceDecimal);
+      const paceSec = Math.round((paceDecimal - paceMin) * 60);
+      paceStr = `${paceMin}'${paceSec < 10 ? '0' : ''}${paceSec}"`;
+    }
 
     return {
       distanceKm,
       durationMin,
       durationSeconds: this.elapsedSeconds,
       averageSpeedKmh: Math.round(avgSpeed * 10) / 10,
-      caloriesKcal: calories
+      caloriesKcal: calories,
+      paceMinKm: paceStr
     };
   }
 

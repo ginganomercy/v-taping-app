@@ -16,6 +16,7 @@ interface WorkoutViewProps {
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
   onOpenGpsTracker?: (phase?: CardioPhase) => void;
+  onOpenCardioHistory?: () => void;
 }
 
 export const WorkoutView: React.FC<WorkoutViewProps> = ({
@@ -28,7 +29,8 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
   onOpenModal,
   onOpenNegativeTimer,
   onPromptRestTimer,
-  onOpenGpsTracker
+  onOpenGpsTracker,
+  onOpenCardioHistory
 }) => {
   const [showFinishModal, setShowFinishModal] = useState(false);
 
@@ -117,6 +119,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
               onOpenNegativeTimer={onOpenNegativeTimer}
               onPromptRestTimer={onPromptRestTimer}
               onOpenGpsTracker={ex.isCardio ? onOpenGpsTracker : undefined}
+              onOpenCardioHistory={ex.isCardio ? onOpenCardioHistory : undefined}
             />
           );
         })}

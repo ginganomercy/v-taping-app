@@ -11,11 +11,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.3">
-    <img src="https://img.shields.io/badge/Release-v1.0.3-crimson.svg?style=for-the-badge&logo=github" alt="Release v1.0.3" />
+  <a href="https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.4">
+    <img src="https://img.shields.io/badge/Release-v1.0.4-crimson.svg?style=for-the-badge&logo=github" alt="Release v1.0.4" />
   </a>
-  <a href="https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.3/VTaper-Protocol-v1.0.3.apk">
-    <img src="https://img.shields.io/badge/Android%20APK-Download%20v1.0.3-107C41.svg?style=for-the-badge&logo=android" alt="Download APK" />
+  <a href="https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.4/VTaper-Protocol-v1.0.4.apk">
+    <img src="https://img.shields.io/badge/Android%20APK-Download%20v1.0.4-107C41.svg?style=for-the-badge&logo=android" alt="Download APK" />
   </a>
   <img src="https://img.shields.io/badge/Offline-100%25%20IndexedDB-0A0A0A.svg?style=for-the-badge&logo=pwa" alt="Offline Ready" />
   <img src="https://img.shields.io/badge/Capacitor-6.2%20Android-119EFF.svg?style=for-the-badge&logo=capacitor" alt="Capacitor 6" />
@@ -146,16 +146,16 @@ Buka browser pada alamat `http://localhost:5173`.
 
 Setiap tag versi yang dipush ke repositori ini akan secara otomatis memicu GitHub Actions untuk mengompilasi dan merilis file biner APK resmi.
 
-- 📥 **Download APK Rilis Terkini:** [V-Taper Protocol v1.0.3](https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.3)
-- 📲 **Langsung Unduh APK:** [VTaper-Protocol-v1.0.3.apk](https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.3/VTaper-Protocol-v1.0.3.apk)
+- 📥 **Download APK Rilis Terkini:** [V-Taper Protocol v1.0.4](https://github.com/ginganomercy/v-taping-app/releases/tag/v1.0.4)
+- 📲 **Langsung Unduh APK:** [VTaper-Protocol-v1.0.4.apk](https://github.com/ginganomercy/v-taping-app/releases/download/v1.0.4/VTaper-Protocol-v1.0.4.apk)
 
 ### Cara Build APK Sendiri (Manual via GitHub Actions):
 ```bash
 # Buat tag versi baru
-git tag -a v1.0.3 -m "Release v1.0.3: Mobile UI Responsive Hardening & Anti-Crush Header"
+git tag -a v1.0.4 -m "Release v1.0.4: Dedicated Cardio History & Running Logs"
 
 # Push tag ke GitHub
-git push origin v1.0.3
+git push origin v1.0.4
 ```
 Workflow GitHub Actions akan otomatis mengompilasi file APK dalam waktu ~2 menit dan menempelkannya di tab **Releases**.
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ZoomIn, Timer, Activity, Navigation, CheckCircle2 } from 'lucide-react';
+import { ZoomIn, Timer, Activity, Navigation, CheckCircle2, History } from 'lucide-react';
 import { Exercise, SetRecord } from '@/types/workout.types';
 import { soundSynthService } from '@/infrastructure/audio/soundSynth.service';
 import { CardioPhase, CARDIO_PHASES } from '@/constants/cardio.constants';
@@ -14,6 +14,7 @@ interface ExerciseCardProps {
   onOpenNegativeTimer: () => void;
   onPromptRestTimer: () => void;
   onOpenGpsTracker?: (phase?: CardioPhase) => void;
+  onOpenCardioHistory?: () => void;
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
@@ -25,7 +26,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onOpenModal,
   onOpenNegativeTimer,
   onPromptRestTimer,
-  onOpenGpsTracker
+  onOpenGpsTracker,
+  onOpenCardioHistory
 }) => {
   const isBackpackExercise = exercise.equip.toLowerCase().includes('tas');
   const isCardioExercise = exercise.isCardio || exercise.pattern.toLowerCase().includes('aerobic');
@@ -146,17 +148,29 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {/* Hybrid Cardio Mode Presets & Dynamic Phase Experience */}
       {isCardioExercise && (
         <div className="space-y-3 pt-1">
-          {/* Live GPS Launcher Button with Active Phase Label */}
-          {onOpenGpsTracker && (
-            <button
-              type="button"
-              onClick={() => onOpenGpsTracker(selectedPhase)}
-              className="btn-spring w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
-            >
-              <Navigation className="w-4 h-4 fill-white" />
-              <span>MULAI LACAK GPS LIVE ({phaseConfig.badge.toUpperCase()})</span>
-            </button>
-          )}
+          {/* Live GPS Launcher & History Button */}
+          <div className="flex gap-2">
+            {onOpenGpsTracker && (
+              <button
+                type="button"
+                onClick={() => onOpenGpsTracker(selectedPhase)}
+                className="btn-spring flex-1 py-3 px-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white font-black text-xs shadow-lg shadow-red-600/30 flex items-center justify-center gap-2"
+              >
+                <Navigation className="w-4 h-4 fill-white shrink-0" />
+                <span className="truncate">MULAI GPS ({phaseConfig.badge.toUpperCase()})</span>
+              </button>
+            )}
+            {onOpenCardioHistory && (
+              <button
+                type="button"
+                onClick={onOpenCardioHistory}
+                className="btn-spring py-3 px-3.5 rounded-2xl bg-zinc-950 hover:bg-zinc-800 text-white font-black text-xs shadow-md border border-zinc-800 flex items-center justify-center gap-1.5 shrink-0"
+              >
+                <History className="w-4 h-4 text-rose-400" />
+                <span>Riwayat</span>
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center justify-between text-[9px] font-mono font-bold text-zinc-400">
             <span className="flex items-center gap-1.5">

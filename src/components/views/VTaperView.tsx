@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Triangle, Droplet } from 'lucide-react';
+import { Sparkles, Triangle, Droplet, Navigation } from 'lucide-react';
 import { WeightEntry } from '@/types/workout.types';
 import { UserProfile } from '@/types/profile.types';
 import { indexedDbService } from '@/infrastructure/db/indexedDb.service';
@@ -8,15 +8,18 @@ import { GOLDEN_RATIO_SWR } from '@/constants/biomechanics.constants';
 
 interface VTaperViewProps {
   profile: UserProfile;
+  onOpenCardioHistory?: () => void;
 }
 
-export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
+export const VTaperView: React.FC<VTaperViewProps> = ({ profile, onOpenCardioHistory }) => {
   const [shoulder, setShoulder] = useState<number>(112);
   const [waist, setWaist] = useState<number>(88);
   const [protein, setProtein] = useState<number>(0);
   const [water, setWater] = useState<number>(0);
   const [weightInput, setWeightInput] = useState<string>('');
   const [weights, setWeights] = useState<WeightEntry[]>([]);
+  const [cardioCount, setCardioCount] = useState<number>(0);
+  const [cardioDistance, setCardioDistance] = useState<number>(0);
 
   useEffect(() => {
     indexedDbService.getMetric<number>('shoulder_cm', 112).then(setShoulder);
@@ -24,6 +27,11 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
     indexedDbService.getMetric<number>('protein_today', 0).then(setProtein);
     indexedDbService.getMetric<number>('water_today', 0).then(setWater);
     indexedDbService.getWeights().then(setWeights);
+    indexedDbService.getCardioLogs().then((logs) => {
+      setCardioCount(logs.length);
+      const totalKm = logs.reduce((acc, curr) => acc + (curr.distanceKm || 0), 0);
+      setCardioDistance(totalKm);
+    });
   }, []);
 
   const handleShoulderChange = (val: number) => {
@@ -319,6 +327,31 @@ export const VTaperView: React.FC<VTaperViewProps> = ({ profile }) => {
               </span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Hybrid Cardio History Summary Card */}
+      <div className="p-5 rounded-3xl bg-white border border-zinc-200 shadow-card-soft">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center shadow-sm">
+              <Navigation className="w-5 h-5 fill-current" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-zinc-950">Riwayat Kardio GPS</h3>
+              <p className="text-[10px] text-zinc-400 font-mono font-bold">
+                {cardioCount} Sesi Tercatat • {cardioDistance.toFixed(2)} KM Terakumulasi
+              </p>
+            </div>
+          </div>
+          {onOpenCardioHistory && (
+            <button
+              onClick={onOpenCardioHistory}
+              className="btn-spring px-3.5 py-2 bg-zinc-950 hover:bg-zinc-800 text-white font-extrabold rounded-xl text-xs shadow-md transition"
+            >
+              Buka Histori
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -40,6 +40,7 @@ export const localStorageService = {
   async exportCompleteBackup(): Promise<string> {
     const profile = this.getProfileSync();
     const weights = await indexedDbService.getWeights();
+    const cardioLogs = await indexedDbService.getCardioLogs();
     const dayLogs: Record<string, unknown> = {};
 
     for (let day = 0; day <= 6; day++) {
@@ -47,10 +48,11 @@ export const localStorageService = {
     }
 
     const payload = {
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       profile,
       weights,
+      cardioLogs,
       dayLogs
     };
 
@@ -75,6 +77,10 @@ export const localStorageService = {
 
       if (parsed.weights && Array.isArray(parsed.weights)) {
         localStorage.setItem(STORAGE_KEYS.WEIGHT_HISTORY, JSON.stringify(parsed.weights));
+      }
+
+      if (parsed.cardioLogs && Array.isArray(parsed.cardioLogs)) {
+        localStorage.setItem(STORAGE_KEYS.CARDIO_HISTORY, JSON.stringify(parsed.cardioLogs));
       }
 
       if (parsed.dayLogs) {

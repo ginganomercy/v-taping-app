@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { UserProfile, Exercise, GpsTrackingResult } from '@/types';
-import { CardioPhase } from '@/constants';
+import { CardioPhase, CARDIO_PHASES } from '@/constants';
 import { WORKOUT_SCHEDULE } from '@/data/workoutData';
 import { localStorageService } from '@/infrastructure';
+import { indexedDbService } from '@/infrastructure/db/indexedDb.service';
 import { useWorkoutSession, useSwipeNavigation, useAcousticTimer } from '@/hooks';
 import { Header, BottomNav, TabType } from '@/components/layout';
 import { DayCarousel } from '@/components/workout';
 import { WorkoutView, VTaperView, HipShieldView, LibraryView } from '@/components/views';
-import { SuperModal, TimerModal, ProfileModal, LiveCardioTrackerModal } from '@/components/modals';
+import {
+  SuperModal,
+  TimerModal,
+  ProfileModal,
+  LiveCardioTrackerModal,
+  CardioHistoryModal
+} from '@/components/modals';
 
 export const App: React.FC = () => {
   // Synchronous Profile Hydration (Instant load without FOUC)
@@ -16,6 +23,7 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('workout');
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isGpsModalOpen, setIsGpsModalOpen] = useState(false);
+  const [isCardioHistoryOpen, setIsCardioHistoryOpen] = useState(false);
   const [activeCardioPhase, setActiveCardioPhase] = useState<CardioPhase>(1);
 
   // Application Hooks Layer
@@ -36,6 +44,33 @@ export const App: React.FC = () => {
 
   const handleCardioFinish = async (result: GpsTrackingResult) => {
     setIsGpsModalOpen(false);
+
+    const now = new Date();
+    const dateFormatted = now.toLocaleDateString('id-ID', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const phaseConfig = CARDIO_PHASES[activeCardioPhase];
+
+    // 1. Permanently save to Dedicated Cardio History Store in IndexedDB
+    await indexedDbService.saveCardioLog({
+      timestamp: now.getTime(),
+      dateFormatted,
+      phase: activeCardioPhase,
+      phaseName: phaseConfig.name,
+      distanceKm: result.distanceKm,
+      durationSeconds: result.durationSeconds,
+      durationMin: result.durationMin,
+      averageSpeedKmh: result.averageSpeedKmh,
+      paceMinKm: result.paceMinKm,
+      caloriesKcal: result.caloriesKcal
+    });
+
+    // 2. Also update current workout session if it has a cardio exercise (e.g. Saturday)
     const currentSession = WORKOUT_SCHEDULE[currentDay];
     const cardioExercise = currentSession.exercises.find((ex) => ex.isCardio);
     if (cardioExercise) {
@@ -44,9 +79,13 @@ export const App: React.FC = () => {
         kg: result.distanceKm,
         durationMin: result.durationMin,
         reps: result.durationMin,
+        phase: activeCardioPhase,
         done: true
       });
     }
+
+    // 3. Automatically open history modal so user gets immediate visual confirmation
+    setIsCardioHistoryOpen(true);
   };
 
   return (
@@ -82,11 +121,17 @@ export const App: React.FC = () => {
                 setActiveCardioPhase(phase);
                 setIsGpsModalOpen(true);
               }}
+              onOpenCardioHistory={() => setIsCardioHistoryOpen(true)}
             />
           </div>
         )}
 
-        {activeTab === 'metrics' && <VTaperView profile={profile} />}
+        {activeTab === 'metrics' && (
+          <VTaperView
+            profile={profile}
+            onOpenCardioHistory={() => setIsCardioHistoryOpen(true)}
+          />
+        )}
         {activeTab === 'hip' && <HipShieldView />}
         {activeTab === 'library' && <LibraryView onOpenModal={setSelectedExercise} />}
       </main>
@@ -121,6 +166,12 @@ export const App: React.FC = () => {
         userWeightKg={profile.currentWeightKg}
         onClose={() => setIsGpsModalOpen(false)}
         onFinish={handleCardioFinish}
+        onOpenHistory={() => setIsCardioHistoryOpen(true)}
+      />
+
+      <CardioHistoryModal
+        isOpen={isCardioHistoryOpen}
+        onClose={() => setIsCardioHistoryOpen(false)}
       />
     </div>
   );
